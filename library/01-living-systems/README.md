@@ -39,7 +39,7 @@ Emerging thread: pathologies of systems. Some failures may be understood as defe
 
 ### Part III - Ontahí
 
-8. [Coming soon: Principles, Entities and Relations Graph, Runtime, Authority, Workflows](03-ontahi/01-coming-soon.md)
+8. [Coming soon: Principles, Entities and Relations Graph, Runtime, Memory and State, Authority, Workflows](03-ontahi/01-coming-soon.md)
 
 ### Part IV - Case Studies
 
