@@ -1,4 +1,4 @@
-# Living Systems
+# Ontahí - System Architecture
 
 This is the first Ontahí book, although it does not begin with Ontahí.
 
@@ -12,11 +12,15 @@ Architecture is not the pursuit of perfection. Architecture is the discipline of
 
 A good architecture is not one that perfectly models today's reality. It is one capable of absorbing tomorrow's ideas without collapsing.
 
-## Working Title
+## Title
 
-Living Systems
+Ontahí - System Architecture
 
 ## Shape
+
+This shape is provisional.
+
+The outline is a map of ideas, not a promise that every item must become a long chapter. Some chapters may remain short. Some may merge. The book should stay readable before it becomes complete.
 
 ### Part I - Living Systems
 
@@ -24,13 +28,13 @@ Living Systems
 2. [Evolution](01-living-systems/02-evolution.md)
 3. [Identity](01-living-systems/03-identity.md)
 4. [Complexity](01-living-systems/04-complexity.md)
-5. The Cost of Change
+5. [The Cost of Change](01-living-systems/05-the-cost-of-change.md)
 
 Emerging thread: pathologies of systems. Some failures may be understood as defensive formations: symptoms, workarounds, tangled dependencies, and compromise structures that let a system continue when it has not yet found the concept it needs.
 
 ### Part II - Thinking
 
-6. Models
+6. [Models](02-thinking/01-models.md)
 7. Abstractions
 8. Ontologies
 9. Behavior
