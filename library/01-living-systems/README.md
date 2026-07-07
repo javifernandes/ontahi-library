@@ -20,10 +20,10 @@ Living Systems
 
 ### Part I - Living Systems
 
-1. [Why Systems Evolve](01-why-systems-evolve.md)
-2. [Evolution](02-evolution.md)
-3. [Identity](03-identity.md)
-4. Complexity
+1. [Why Systems Evolve](01-living-systems/01-why-systems-evolve.md)
+2. [Evolution](01-living-systems/02-evolution.md)
+3. [Identity](01-living-systems/03-identity.md)
+4. [Complexity](01-living-systems/04-complexity.md)
 5. The Cost of Change
 
 Emerging thread: pathologies of systems. Some failures may be understood as defensive formations: symptoms, workarounds, tangled dependencies, and compromise structures that let a system continue when it has not yet found the concept it needs.

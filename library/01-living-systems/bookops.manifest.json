@@ -9,7 +9,8 @@
     "language": "en"
   },
   "structure": {
-    "kind": "numbered-root-files",
+    "kind": "numbered-folders-and-files",
+    "partsAreNumberedFolders": true,
     "chaptersAreNumberedMarkdownFiles": true,
     "rootReadmeIsMetadataOnly": true
   },
@@ -47,7 +48,7 @@
       },
       "reader": {
         "layout": {
-          "minWidth": "44rem"
+          "minWidth": "48rem"
         },
         "loading": {
           "markImage": "url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%3E%3Cpath%20d%3D%22M61%2071c-7%2013-9%2025-4%2038%22%20stroke%3D%22%23465538%22%20stroke-width%3D%227%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M56%2084c-15-8-26-4-34%2011%2014%203%2026-1%2034-11Z%22%20fill%3D%22%237A7F52%22%2F%3E%3Cpath%20d%3D%22M63%2077c14%200%2024%207%2030%2021-15%200-25-7-30-21Z%22%20fill%3D%22%2398A16B%22%2F%3E%3Cpath%20d%3D%22M62%2066c-18-2-31-12-38-29%2019-1%2032%209%2038%2029Z%22%20fill%3D%22%23D94C43%22%2F%3E%3Cpath%20d%3D%22M66%2060c-9-17-8-34%203-49%2013%2015%2012%2032-3%2049Z%22%20fill%3D%22%23E06A61%22%2F%3E%3Cpath%20d%3D%22M72%2062c8-16%2022-24%2040-24-6%2018-19%2027-40%2024Z%22%20fill%3D%22%23D94C43%22%2F%3E%3Cpath%20d%3D%22M70%2070c16%203%2028%2014%2035%2031-19%200-31-10-35-31Z%22%20fill%3D%22%23E06A61%22%2F%3E%3Cpath%20d%3D%22M56%2063c-15%208-30%208-45%200%2012-13%2028-13%2045%200Z%22%20fill%3D%22%23D94C43%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%2266%22%20r%3D%227%22%20fill%3D%22%23F6F2EB%22%20stroke%3D%22%23D94C43%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E\")",
