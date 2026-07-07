@@ -35,24 +35,15 @@ Emerging thread: pathologies of systems. Some failures may be understood as defe
 ### Part II - Thinking
 
 6. [Models](02-thinking/01-models.md)
-7. Abstractions
-8. Ontologies
-9. Behavior
-10. Discovering Dimensions
+7. [Coming soon: Abstractions, Ontologies, Behavior, Discovering Dimensions](02-thinking/02-coming-soon.md)
 
 ### Part III - Ontahí
 
-11. Principles
-12. Data Graph
-13. Runtime
-14. Authority
-15. Workflows
+8. [Coming soon: Principles, Data Graph, Runtime, Authority, Workflows](03-ontahi/01-coming-soon.md)
 
 ### Part IV - Case Studies
 
-16. BookOps
-17. Other Systems
-18. Lessons Learned
+9. [Coming soon: BookOps, Other Systems, Lessons Learned](04-case-studies/01-coming-soon.md)
 
 ## Writing Posture
 
