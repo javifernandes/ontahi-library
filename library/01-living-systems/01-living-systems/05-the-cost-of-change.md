@@ -34,33 +34,28 @@ It is also temporary.
 
 As the system grows, code becomes only one surface of change. A change may touch tests, reports, permissions, habits, dashboards, documentation, support scripts, names, training, expectations, and the quiet promises users have learned to trust.
 
-The edit remains local.
+The *edit* remains local.
 
-The meaning does not.
+The *meaning* does not.
 
 This is where many teams become confused. They see a small edit and expect a small consequence.
 
 But complex systems do not price change by the size of the patch.
 
-They price change by the number of relations that must be reinterpreted.
+They price change by the number of *relations* that must be reinterpreted.
 
 ## Discovery
 
 The first cost of change is *discovery*.
 
-Before a system can change safely, someone must discover what the change is.
+Before a system can change safely, someone must discover what kind of change has arrived:
 
-Is it a new case?
-
-Is it an exception?
-
-Is it a missing concept?
-
-Is it a violation of an existing boundary?
-
-Is it evidence that an old boundary has become too rigid?
-
-Is it a local request, or a hidden dimension that was always present?
+- a new case
+- an exception
+- a missing concept
+- a violation of an existing boundary
+- evidence that an old boundary has become too rigid
+- a local request revealing a hidden dimension
 
 These questions are not secondary to implementation.
 
@@ -87,15 +82,15 @@ A system should not accept every change.
 
 If every request reshapes the model, the system loses identity. It becomes a catalog of local pressures.
 
-Good architecture creates resistance.
+Good architecture creates *resistance*.
 
-But it should create *intelligible* resistance.
+But it should create *intelligible resistance*.
 
-It should be possible to say why a change does not belong yet.
+It should be possible to say:
 
-It should be possible to say what concept would have to exist before the change could be absorbed.
-
-It should be possible to distinguish "not now" from "not here" from "not in this form" from "our model is wrong".
+- why a change does not belong yet
+- what concept would have to exist before the change could be absorbed
+- whether the answer is "not now", "not here", "not in this form", or "our model is wrong"
 
 Bad resistance is different.
 
@@ -119,15 +114,12 @@ But the conversation with change has become too expensive.
 
 One way to lower the cost of change is to preserve *reversibility*.
 
-Reversible changes can teach the system without immediately trapping it.
+Reversible changes can teach the system without immediately trapping it:
 
-A feature flag can be reversed.
-
-A migration with a path back can be reversed.
-
-A naming experiment can be corrected.
-
-A workflow can be introduced as provisional before it becomes law.
+- a feature flag can be reversed
+- a migration with a path back can be reversed
+- a naming experiment can be corrected
+- a workflow can be introduced as provisional before it becomes law
 
 Reversibility is not indecision.
 
@@ -147,47 +139,34 @@ Architecture cannot remove the cost of change.
 
 Living systems always pay something to remain alive.
 
-The work of architecture is to *shape* the cost.
+The work of architecture is to *shape* the cost:
 
-Some costs should be paid early, when the concept is small and the consequences are visible.
-
-Some costs should be delayed, because premature certainty would freeze the wrong shape.
-
-Some costs should be moved from production to tests.
-
-Some from code to language.
-
-Some from individuals to shared artifacts.
-
-Some from hidden habit to explicit boundary.
+- pay some costs early, when the concept is small and the consequences are visible
+- delay some costs, because premature certainty would freeze the wrong shape
+- move some costs from *production* to *tests*
+- move some from *code* to *language*
+- move some from individuals to shared artifacts
+- move some from hidden habit to explicit boundary
 
 The question is not how to make change free.
 
 Free change is another fantasy of control.
 
-The question is how to make change *thinkable*.
+The question is how to make change *thinkable*:
 
-Can the system notice what is changing?
-
-Can it name the relations at stake?
-
-Can it preserve continuity without denying reality?
-
-Can it refuse a change without becoming rigid?
-
-Can it accept a change without dissolving?
+- can the system notice what is changing?
+- can it name the relations at stake?
+- can it preserve continuity without denying reality?
+- can it refuse a change without becoming rigid?
+- can it accept a change without dissolving?
 
 ## The First Lesson
 
-Part I began with movement.
+Part I has been circling one lesson.
 
-Systems evolve.
+Change is not only movement.
 
-They adapt, mutate, select, metabolize, and sometimes lose themselves.
-
-They preserve identity through change, but identity is not sameness.
-
-They become complex when relations exceed local understanding.
+It is *interpretation* under pressure.
 
 And when relations exceed local understanding, change acquires a cost beyond implementation.
 

@@ -102,7 +102,15 @@ No one can understand a complex system by remembering everything.
 
 Understanding requires *compression*.
 
-We give names to patterns. We draw boundaries. We create diagrams. We define invariants. We build dashboards. We write tests. We create types, protocols, services, modules, and stories.
+We compress reality into forms the mind can use:
+
+- names
+- boundaries
+- diagrams
+- invariants
+- dashboards
+- tests
+- types, protocols, services, modules, and stories
 
 Each of these is a *compression* of reality.
 
@@ -177,23 +185,22 @@ The goal is enough visibility for the system to *learn* from what happens to it.
 
 > Observability is the memory of complexity becoming available to thought.
 
-## The Cost of Change
+## Discovery Cost
 
-Complexity matters because it changes the *cost of change*.
+Complexity matters because it makes change indirect.
 
-In a simple system, the cost of a change is close to the cost of editing the part.
+In a simple system, a change is priced close to the edit.
 
-In a complex system, the cost of a change includes the cost of discovering what else the change *means*.
+In a complex system, the edit is only the visible event.
+
+The hidden work is *discovering* what else has moved:
+
+- a field takes one minute to add and three weeks to understand
+- a workflow takes one day to implement and six months to unwind
+- a boundary takes one meeting to name and years to make real
+- a concept takes one sentence to say and a long time to earn
 
 This *discovery cost* can dominate everything.
-
-A field takes one minute to add and three weeks to understand.
-
-A workflow takes one day to implement and six months to unwind.
-
-A boundary takes one meeting to name and years to make real.
-
-A concept takes one sentence to say and a long time to earn.
 
 This is why architecture cannot be judged only by the elegance of its current shape.
 
@@ -201,19 +208,11 @@ It must be judged by the kinds of *discovery* it makes possible.
 
 ## The Next Question
 
-Evolution shows that systems change.
+Complexity shows that change is movement through *relations*.
 
-Identity asks how they remain continuous.
-
-Complexity shows why change becomes expensive.
-
-The next problem is the cost of change itself.
-
-Because once a system contains more relations than any one person can hold, every change becomes partly an act of *interpretation*.
+Once a system contains more relations than any one person can hold, every change becomes partly an act of *interpretation*.
 
 > [!NOTE]
 > This is also a linguistic problem. A change does not only alter behavior; it can alter the language by which the system is understood. A new name can recombine old meanings. An old word can begin to carry a new function. In this abstract sense, language is the first human-computer interface: the way humans ask a system what it is, what it means, and what can be done with it.
 
-The question is no longer only what should change.
-
-The question is what it will cost the system to *understand* the change.
+The next problem is the cost of that *understanding*.

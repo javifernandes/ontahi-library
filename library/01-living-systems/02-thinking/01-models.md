@@ -34,17 +34,17 @@ Every exception has the same weight as every principle.
 
 The system becomes impossible to approach because nothing has been compressed into a form the mind can use.
 
-A model says: look here.
+A model says:
 
-It says: this relation matters more than that one.
+- look here
+- this relation matters more than that one
+- for this purpose, these differences can be ignored
 
-It says: for this purpose, these differences can be ignored.
+It turns *motion* into shape.
 
-It turns motion into a shape.
+It turns *experience* into language.
 
-It turns experience into language.
-
-It turns fear into a question.
+It turns *fear* into a question.
 
 This is why models are not merely diagrams or schemas.
 
@@ -54,31 +54,28 @@ A deployment model, a domain model, a pricing model, a permission model, a menta
 
 Every model buys clarity by paying with distortion.
 
-There is no neutral model.
+There is no *neutral* model.
 
-A model that is useful for operations may be wrong for design.
+A model is useful only relative to a purpose:
 
-A model that is useful for reporting may be wrong for identity.
-
-A model that is useful for onboarding may be wrong for evolution.
+- useful for *operations*, misleading for design
+- useful for *reporting*, misleading for identity
+- useful for *onboarding*, misleading for evolution
 
 This does not make the model bad.
 
-It means the model has a purpose.
+It means the model has a *purpose*.
 
 Problems begin when the purpose is forgotten.
 
-The model becomes reality.
+The confusion has familiar forms:
 
-The diagram becomes the system.
-
-The database table becomes the concept.
-
-The dashboard becomes the truth.
-
-The ticket category becomes the user.
-
-The name becomes the thing.
+- the model becomes reality
+- the diagram becomes the system
+- the database table becomes the concept
+- the dashboard becomes the truth
+- the ticket category becomes the user
+- the name becomes the thing
 
 > [!NOTE]
 > Psychoanalysis is useful here because it treats representation as active. A word, image, symptom, or story does not merely report reality. It organizes what can be said, hidden, displaced, repeated, or transformed.
@@ -99,15 +96,13 @@ Completeness is usually a trap.
 
 A good model is one that remains *workable*.
 
-It helps people coordinate.
+It can:
 
-It makes consequences visible.
-
-It allows disagreement to become precise.
-
-It can be corrected when reality pushes back.
-
-It can admit that it is only a model.
+- help people coordinate
+- make consequences visible
+- allow disagreement to become precise
+- be corrected when reality pushes back
+- admit that it is only a model
 
 This last property matters more than it sounds.
 
@@ -127,15 +122,12 @@ The understanding decays.
 
 Complex systems require more than one model.
 
-No single representation can carry every truth.
+No single representation can carry every truth:
 
-The user journey is not the data model.
-
-The data model is not the runtime model.
-
-The runtime model is not the organizational model.
-
-The organizational model is not the economic model.
+- the user journey is not the data model
+- the data model is not the runtime model
+- the runtime model is not the organizational model
+- the organizational model is not the economic model
 
 Each sees a different system.
 
@@ -147,13 +139,12 @@ The work is to let them speak to each other.
 
 Sometimes the most important architectural discovery happens when two models disagree.
 
-The product model says the user has one account.
+Different models may tell different truths:
 
-The billing model says the organization owns the subscription.
-
-The permission model says access belongs to a role.
-
-The support model says the real actor is the person who will call when everything breaks.
+- the *product* model says the user has one account
+- the *billing* model says the organization owns the subscription
+- the *permission* model says access belongs to a role
+- the *support* model says the real actor is the person who will call when everything breaks
 
 None of these is simply wrong.
 
@@ -161,15 +152,10 @@ The system is revealing that it has more dimensions than the old language could 
 
 ## Losing The Model
 
-A team can lose a model in two ways.
+A team can lose a model in two ways:
 
-It can have no model.
-
-Then every change is improvised. Knowledge lives in anecdotes, rituals, and fear.
-
-Or it can have a model that can no longer be questioned.
-
-Then every change is forced to pass through an old form, even when reality has moved elsewhere.
+- it can have *no model*, so every change is improvised and knowledge lives in anecdotes, rituals, and fear
+- it can have an *unquestionable model*, so every change is forced through an old form even when reality has moved elsewhere
 
 These failures look different.
 
@@ -183,9 +169,9 @@ The second has only one.
 
 ## The Next Question
 
-Models make systems thinkable.
+Models make systems *thinkable*.
 
-But a model is still a compression.
+But a model is still a *compression*.
 
 It gives us a handle, not a final truth.
 
@@ -193,4 +179,4 @@ So the next question is not how to avoid abstraction.
 
 We cannot.
 
-The next question is how to make abstractions that can survive contact with what they exclude.
+The next question is how to make abstractions that can survive contact with what they *exclude*.
