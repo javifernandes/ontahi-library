@@ -94,11 +94,9 @@ This is when architecture becomes active.
 
 It asks:
 
-Is this pressure local?
-
-Is this pressure evidence?
-
-Is this an exception, or have we discovered a dimension?
+- Is this pressure local?
+- Is this pressure evidence?
+- Is this an exception, or have we discovered a dimension?
 
 > The work is not to say yes to every change.
 >
@@ -118,21 +116,19 @@ They should remain experiments long enough to teach something.
 
 This is hard because teams often confuse implementation with understanding. Once a feature exists, it begins to feel inevitable. Once a table exists, people begin to speak as if the table names the world. Once a workflow exists, users adapt to it, and the adaptation looks like confirmation.
 
+> Plato's cave is a useful warning here. A representation can become so familiar that people begin to treat its shadow as reality. Psychoanalysis gives the same danger another language: a signifier can organize experience so strongly that the subject becomes fixed to it. Systems can also become fixed to their tables, workflows, and categories.
+
 > But a first implementation is not a discovery.
 >
 > It is a probe.
 
 The system learns from what happens next.
 
-Does the idea repeat?
-
-Does it connect to other ideas?
-
-Does it reduce strain elsewhere?
-
-Does it make the vocabulary clearer?
-
-Does it make future changes cheaper?
+- Does the idea repeat?
+- Does it connect to other ideas?
+- Does it reduce strain elsewhere?
+- Does it make the vocabulary clearer?
+- Does it make future changes cheaper?
 
 If not, the mutation may still have been useful. It taught the system what not to become.
 
