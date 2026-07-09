@@ -31,8 +31,6 @@ It is made of *relations* between components.
 
 A body relates sleep to hunger, hunger to energy, energy to attention, attention to mood, mood to the way a person meets the world.
 
-A city relates transport to work, work to time, time to care, care to politics, politics to what people believe is possible.
-
 A software system is not different in kind. It only makes some of these relations executable.
 
 The component is visible.
@@ -49,17 +47,12 @@ Over time, those relations either become *explicit* enough to be shared, or they
 
 The first sign of complexity is that *local understanding* stops being enough.
 
-A developer can understand the function and still misunderstand the change.
+Each local view can be true and *incomplete*:
 
-An operator can understand the alert and still misunderstand the incident.
-
-A designer can understand the screen and still misunderstand the workflow.
-
-A user can understand the action and still misunderstand its consequences.
-
-Each local view is true.
-
-Each local view is *incomplete*.
+- A developer can understand the function and still misunderstand the change.
+- An operator can understand the alert and still misunderstand the incident.
+- A designer can understand the screen and still misunderstand the workflow.
+- A user can understand the action and still misunderstand its consequences.
 
 > Complexity does not begin when people are wrong.
 >
@@ -157,6 +150,9 @@ Not because informal practice is bad.
 
 Informal practice is often where understanding is born.
 
+> [!NOTE]
+> There is a Freudian resonance here. A representation can be active before it is bound to words. Informal practice can behave the same way: a team may act from knowledge that has not yet become explicit enough to be named, shared, or corrected.
+
 It is fragile because knowledge that cannot *move* cannot scale.
 
 ## Observability
@@ -169,13 +165,12 @@ Without observability, a system can only discover itself through failure.
 
 A system is observable when its behavior can be connected back to the *concepts* that explain it.
 
-Can we see which workflow produced this state?
+It asks:
 
-Can we see which boundary allowed this change?
-
-Can we see which invariant was preserved, weakened, or violated?
-
-Can we see whether this failure is local noise or evidence of a missing concept?
+- Can we see which workflow produced this state?
+- Can we see which boundary allowed this change?
+- Can we see which invariant was preserved, weakened, or violated?
+- Can we see whether this failure is local noise or evidence of a missing concept?
 
 The goal is not total visibility.
 
