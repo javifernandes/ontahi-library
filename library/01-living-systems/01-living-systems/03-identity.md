@@ -14,7 +14,7 @@ A language replaces words.
 
 A city replaces buildings.
 
-A company replaces people.
+An organization replaces people.
 
 A software system replaces code, screens, data structures, services, deployment machinery, dependencies, and sometimes even its own explanation of what it does.
 
@@ -144,13 +144,10 @@ Good boundaries preserve identity by making *negotiation* possible.
 
 They say:
 
-This belongs here.
-
-This does not belong here.
-
-This does not belong here yet.
-
-This used to belong here, but the system has learned a better place for it.
+- This belongs here.
+- This does not belong here.
+- This does not belong here yet.
+- This used to belong here, but the system has learned a better place for it.
 
 ## The Self of a System
 
@@ -162,15 +159,13 @@ But systems do have something like a self-description.
 
 They have an internal account of what they are, what they protect, what they expose, what they remember, what they ignore, and what kinds of change they know how to survive.
 
-This self-description may be formal, as in schemas and protocols.
+This self-description may be:
 
-It may be social, as in team practices and institutional memory.
-
-It may be operational, as in runbooks, alerts, dashboards, and deployment rituals.
-
-It may be architectural, as in boundaries, dependencies, and allowed directions of flow.
-
-It may be narrative, as in the story a team tells when someone asks why the system exists.
+- Formal, as in schemas and protocols.
+- Social, as in team practices and institutional memory.
+- Operational, as in runbooks, alerts, dashboards, and deployment rituals.
+- Architectural, as in boundaries, dependencies, and allowed directions of flow.
+- Narrative, as in the story a team tells when someone asks why the system exists.
 
 A healthy system does not need all of these to be perfect.
 
@@ -196,15 +191,13 @@ A system loses itself when it can no longer recognize its own changes.
 > [!NOTE]
 > There is also a resonance with entropy. The system does not lose itself because it changes, but because its changes stop being integrated into a readable order. Exceptions multiply. Distinctions blur. Local adaptations become noise. The system still has state, but less form: less capacity to tell which changes belong to its history and which are merely drift.
 
-This can happen through rigidity. The system refuses to adapt, so every new pressure becomes an external patch.
+This can happen through:
 
-It can happen through drift. The system accepts every change, but none of the changes are integrated into a clearer model.
-
-It can happen through amnesia. The system keeps its behavior but loses the reasons for the behavior.
-
-It can happen through mimicry. The system copies the shape of another system without sharing the forces that made that shape meaningful.
-
-It can happen through over-abstraction. The system generalizes too early and erases the concrete tensions that would have taught it what the abstraction needed to be.
+- Rigidity. The system refuses to adapt, so every new pressure becomes an external patch.
+- Drift. The system accepts every change, but none of the changes are integrated into a clearer model.
+- Amnesia. The system keeps its behavior but loses the reasons for the behavior.
+- Mimicry. The system copies the shape of another system without sharing the forces that made that shape meaningful.
+- Over-abstraction. The system generalizes too early and erases the concrete tensions that would have taught it what the abstraction needed to be.
 
 This is why anti-patterns are rarely just bad shapes. Spaghetti coupling, duplicated workflows, overloaded concepts, and hidden shared state are often symptoms of a system trying to preserve itself after an abstraction or boundary has failed.
 
