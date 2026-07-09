@@ -85,6 +85,13 @@
           "background": "#FBF8F0",
           "border": "#D9D1C0",
           "foreground": "#1F2A24"
+        },
+        "note": {
+          "background": "#FBF8F0",
+          "border": "#D9D1C0",
+          "foreground": "#5F746D",
+          "iconColor": "#7A7F52",
+          "linkColor": "#D94C43"
         }
       },
       "navigation": {
@@ -142,6 +149,13 @@
               "background": "#101713",
               "border": "#465538",
               "foreground": "#F6F2EB"
+            },
+            "note": {
+              "background": "#1F2A24",
+              "border": "#465538",
+              "foreground": "#B9C2AA",
+              "iconColor": "#98A16B",
+              "linkColor": "#E06A61"
             }
           },
           "navigation": {
