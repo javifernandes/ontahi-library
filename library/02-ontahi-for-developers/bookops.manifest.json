@@ -1,0 +1,22 @@
+{
+  "format": "bookops-md",
+  "version": 1,
+  "book": {
+    "slug": "ontahi-for-developers",
+    "title": "Ontahí for Developers",
+    "subtitle": "Model the domain once. Let runtimes carry it.",
+    "author": "Javier Fernandes",
+    "language": "en"
+  },
+  "structure": {
+    "kind": "numbered-folders-and-files",
+    "partsAreNumberedFolders": true,
+    "chaptersAreNumberedMarkdownFiles": true,
+    "rootReadmeIsMetadataOnly": true
+  },
+  "bookops": {
+    "recommendedMountPath": "ontahi-library/library/02-ontahi-for-developers",
+    "localAssets": true,
+    "localAssetsPath": "/figures"
+  }
+}
