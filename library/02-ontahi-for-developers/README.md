@@ -14,8 +14,8 @@ that model is interpreted.
 ### Part I — The Ontahí Form
 
 1. [One Application](01-the-ontahi-form/01-one-application.md)
-2. Entity and Identity
-3. Relations and Topology
+2. [Entity and Identity](01-the-ontahi-form/02-entity-and-identity.md)
+3. [Relations and Topology](01-the-ontahi-form/03-relations-and-topology.md)
 
 ### Part II — Selecting and Acting
 
