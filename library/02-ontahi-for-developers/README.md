@@ -14,27 +14,28 @@ that model is interpreted.
 ### Part I — The Ontahí Form
 
 1. [One Application](01-the-ontahi-form/01-one-application.md)
-2. [Entity and Identity](01-the-ontahi-form/02-entity-and-identity.md)
-3. [Relations and Topology](01-the-ontahi-form/03-relations-and-topology.md)
+2. [An Entity at Work](01-the-ontahi-form/02-entity-and-identity.md)
+3. [Identity and Refs](01-the-ontahi-form/03-identity-and-refs.md)
+4. [Relations and Topology](01-the-ontahi-form/04-relations-and-topology.md)
 
-### Part II — Selecting and Acting
+### Part II — Changing State
 
-4. Selection: Naming a Set
-5. Queries and Commands
-6. Domain Operations
-7. Durable Operations
+5. [Create, Rename, Delete](02-changing-state/01-create-rename-delete.md)
+6. Selection: Naming a Set
+7. Queries and Commands
+8. Durable Operations
 
 ### Part III — Carrying the Model
 
-8. Capabilities and Runtime Composition
-9. Storage
-10. Transport
+9. Capabilities and Runtime Composition
+10. Storage
+11. Transport
 
 ### Part IV — Projecting the Application
 
-11. Codegen and React
-12. Reflection and Explorer
-13. The Host Boundary
+12. React Runtime: Cache and Invalidation
+13. Reflection and Explorer
+14. The Host Boundary
 
 The sequence is provisional until the canonical-surface inventory has been exercised through the
 first three chapters. The distinctions are not provisional: Application, Entity, Ref, Relation,
@@ -42,8 +43,10 @@ Selection, Query, Command, Domain Operation, Capability, and Runtime each carry 
 
 ## Writing posture
 
-Lead with executable form. Explain an abstraction when the code creates pressure for its name.
-Prefer one complete example over a catalog of disconnected features.
+Lead with executable form. Use the application first from ordinary Node code, then show the same
+surface through React. Explain an abstraction when the code creates pressure for its name. Prefer
+one complete example over a catalog of disconnected features.
 
-The main path uses only canonical APIs. Advanced machinery appears after its need is visible.
-Transitional APIs do not become doctrine by appearing in a book.
+React support stays transparent on the main path. Cache behavior and invalidation mechanics belong
+to the advanced projection section. The main path uses only canonical APIs; transitional APIs do
+not become doctrine by appearing in a book.

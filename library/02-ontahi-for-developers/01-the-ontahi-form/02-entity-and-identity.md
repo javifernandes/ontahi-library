@@ -1,6 +1,6 @@
-# Entity and Identity
+# An Entity at Work
 
-An Entity is a named kind of thing with stable identity.
+An Entity declares a named kind of thing and the operations that belong to it.
 
 ```ts
 export const TodoList = entity({
@@ -9,68 +9,77 @@ export const TodoList = entity({
     id: field.id(),
     name: field.nonEmptyString({ trim: true }),
   },
-  locators: {
-    refById: 'id',
-  },
+  locators: { refById: 'id' },
   identity: 'refById',
+  domainOperationDefaults: {
+    authority: 'server',
+    exposure: 'bridge',
+    layer: 'todos',
+  },
+  operations: ({ self, commands, operation }) => ({
+    list: operation({
+      output: graphSchema.array(self),
+      bridge: { query: [() => 'all'] },
+      run: () => commands.all().orderBy(list => list.name),
+    }),
+  }),
 });
 ```
 
-Fields describe values. A locator describes how an entity can be identified. `identity` selects
-the default locator used when a caller supplies a plain ID or an entity record.
+Fields describe its values. Locators and identity will matter in the next chapter. For now, the
+important addition is `list`: a typed operation whose implementation is a graph query.
 
-The declaration produces both a schema and ref factories:
+## Use it from Node
 
-```ts
-const inbox = TodoList.refById('list-1');
-```
-
-A Ref is identity without loaded state:
+`ontahi()` binds the declaration to the application's storage and runtime. Ordinary Node code can
+invoke the resulting operation directly:
 
 ```ts
-{
-  kind: 'entity-ref',
-  entityName: 'TodoList',
-  locator: { id: 'list-1' },
+import { TodoApplication } from './graph.js';
+
+const lists = TodoApplication.graph.entities.TodoList;
+const result = await TodoApplication.invokeOperation(lists.domain.list, undefined);
+
+if (!result.ok) throw new Error(`TodoList.list failed: ${result.kind}`);
+
+for (const list of result.value) {
+  console.log(`${list.name} (${list.id})`);
 }
 ```
 
-It says which TodoList. It does not claim that the list exists, contain its current fields, or read
-storage.
+There is no HTTP request, React component, or storage-specific query here. The application executes
+the operation through the runtime selected at composition.
 
-## Composite identity
+## Use the same operation from React
 
-Identity can use more than one field:
+Codegen projects the browser-safe side of the same entity. The React hook consumes that projection:
 
-```ts
-export const TodoTag = entity({
-  name: 'TodoTag',
-  fields: {
-    todoId: field.id(),
-    tagId: field.id(),
-  },
-  locators: {
-    refByTodoAndTag: ['todoId', 'tagId'],
-  },
-  identity: 'refByTodoAndTag',
-});
+```tsx
+const lists = useOperationQuery(TodoList.domain.list);
+
+if (lists.isLoading) return <p>Loading lists…</p>;
+if (!lists.data) return null;
+
+return (
+  <ul>
+    {lists.data.map(list => (
+      <li key={list.id}>{list.name}</li>
+    ))}
+  </ul>
+);
 ```
 
-```ts
-const assignment = TodoTag.refByTodoAndTag('todo-1', 'tag-1');
-```
+React is one caller of the Ontahí application. It receives typed data and lifecycle state; the
+entity and operation remain independent of React. Cache mechanics come later.
 
-Identity belongs to the semantic entity. Table names, indexes, and physical constraints belong to
-the storage mapping and migration owned by the host.
+## What the declaration owns
 
-## What the entity owns
-
-The complete declaration may also contain:
+An entity may also declare:
 
 - display and freshness metadata;
-- relations;
+- refs and relations;
 - application dependencies through `uses`;
 - graph and domain operations.
 
-These are facets of one entity, not parallel schemas for each runtime. Ontahí projects the same
-declaration toward storage, reflection, codegen, clients, and Explorer.
+These are facets of one semantic entity, not parallel schemas for Node, React, storage, reflection,
+or Explorer.
