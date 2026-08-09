@@ -55,7 +55,8 @@ This is the shortest complete account of the current framework.
 | Capabilities | Canonical need; draft low-level API | `uses.capabilities` plus root `capabilities` | Todo notification Capability, BookOps exercises and notification capabilities | Typed resource injection connects Entities to host implementations, but the resources are opaque and may later become more semantic declarations. Sync, async, and Effect providers normalize once at the host boundary. Dependencies are not yet reflected or checked for completeness at composition time. |
 | Cross-entity dependency | Canonical | `uses.entities`, resolved through the application catalog | Todo and unified BookOps entities | Makes semantic dependencies explicit and independent of registration order. |
 | Storage | Canonical port | one `storage` supplied to `ontahi()`; in-memory and PostgreSQL bind directly to the registered Entity catalog | Todo storage switch, in-memory/PostgreSQL conformance, BookOps Supabase binding | Ontahí owns execution semantics. Conventional PostgreSQL mapping avoids a second schema declaration; the host owns persistence, migrations, physical exceptions, and transactions. |
-| Transport | Canonical adapter boundary | mount a composed application through `ontahiExpress(...)`; use provider route handlers when the host runtime requires them | Express Todo and Next.js BookOps invocation routes | Transport resolves and invokes operations through the common protocol; it does not redefine them. |
+| Operation invocation transport | Canonical adapter boundary | mount a composed application through `ontahiExpress(...)` or a provider route handler | Express Todo, Next.js BookOps, shared invocation dispatcher | A generic bridge carries operation identity and opaque input through the common protocol; it does not redefine operations or create one endpoint per intention. |
+| HTTP ingress | Canonical operation metadata; low-level host binding | `ingress.http({ method, route, provider, channel })`, reflected routes, provider registry, and shared dispatcher | BookOps GitHub push and installation webhooks, core ingress router tests | External providers authenticate and normalize requests before dispatch. Provider/router composition, delivery context, deduplication, and resource binding remain in motion. |
 | Browser projection | Canonical when a browser exists | codegen output consumed by `@ontahi/react`; author the same Refs and Selections from generated entities | Todo Vite client and BookOps generated entities | Browser-safe projection and client input types come from the application declaration. |
 | Reflection / Explorer | Canonical inspection surface | reflect the application and mount Explorer | Express example and BookOps Explorer | Inspection consumes the same application model; it is not a second registry. |
 
@@ -96,6 +97,7 @@ These are real parts of Ontahí, but they should appear only where their pressur
 | `@ontahi/supabase` | Graph plans through Supabase/PostgREST; task-run storage | Production adapter behind core contracts | Client creation, mappings, RLS, credentials, request scope | Production adapter appendix until its BookOps seams are fully separated |
 | `@ontahi/runtime-express` | Operation, reflection, task, and Explorer HTTP endpoints | Thin transport over the composed application | Express lifecycle, JSON, auth middleware, static assets, logging | Main path |
 | `@ontahi/runtime-nextjs` | Next.js actions/routes and invocation transport | Next-specific adaptation of core contracts | App Router composition, request identity, deployment behavior | Adapter chapter |
+| Core HTTP ingress runtime | Reflected method/path/provider/channel routes into operation invocations | Accepted/ignored/rejected provider outcomes and dispatch through the canonical operation dispatcher | Raw bodies, signatures, provider decoding, secrets, delivery policy, route mounting | Transport chapter, explicitly low-level |
 | `@ontahi/runtime-vercel-workflows` | Durable task execution | Ontahí task lifecycle over Vercel Workflow | Registries, generated entrypoints, stores, deployment | Advanced durable chapter |
 | `@ontahi/react` | Browser graph context, hooks, invocation, cache integration | Typed consumption of generated/reflected operations | Query client, host providers, UI behavior | Main browser chapter |
 | `@ontahi/explorer-react` | Reflected application and entity data | Reusable inspection and operation UI | Mounting, routes, access control, host theme | Inspection chapter |
@@ -159,6 +161,9 @@ coordination, durable execution, effects, or a stable public contract.
 7. Entity-level uniqueness is not yet a declarative invariant interpreted consistently by storage,
    operation failures, reflection, and generated clients. A query-based precondition cannot supply
    the required atomicity on its own.
+8. HTTP ingress metadata is reflected and executable, but provider/resource binding, raw-request
+   adaptation, delivery context, and deduplication are still host-level. The current Todo ingress
+   declaration is discoverable but is not automatically mounted by `ontahiExpress(...)`.
 
 ## Chapter contract
 

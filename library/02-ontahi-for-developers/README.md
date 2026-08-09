@@ -29,16 +29,17 @@ that model is interpreted.
 ### Part III — Carrying the Model
 
 10. [Capabilities and Runtime Composition](03-carrying-the-model/01-capabilities-and-runtime-composition.md)
-11. [Storage and Transport Adapters](03-carrying-the-model/02-storage-and-transport-adapters.md)
+11. [Storage Adapters](03-carrying-the-model/02-storage-adapters.md)
+12. [Transport, Bridges, and HTTP Ingress](03-carrying-the-model/03-transport-bridges-and-http-ingress.md)
 
 ### Part IV — Projecting the Application
 
-12. Browser Projection Internals: Codegen, Cache Identity, and Invalidation
-13. Reflection, Explorer, and Host Responsibilities
+13. Browser Projection Internals: Codegen, Cache Identity, and Invalidation
+14. Reflection, Explorer, and Host Responsibilities
 
 The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
-Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability, and
-Runtime each carry a different job.
+Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability,
+Ingress, and Runtime each carry a different job.
 
 ## Writing posture
 
