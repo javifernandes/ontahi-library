@@ -125,20 +125,15 @@ operations: ({ self, commands, operation, app }) => ({
     output: self,
     contracts: {
       pre: ({ name }) =>
-        Effect.gen(function* () {
-          const existing = yield* commands
-            .where(list => list.name.eq(name))
-            .select(list => ({ id: list.id }))
-            .limit(1)
-            .run();
-
-          return existing.length > 0
-            ? app.operation.createFailure(
-                'todo_list_name_taken',
-                'A TodoList already uses that name.',
-              )
-            : undefined;
-        }),
+        commands
+          .where(list => list.name.eq(name))
+          .exists()
+          .thenIf(
+            app.operation.fail(
+              'todo_list_name_taken',
+              'A TodoList already uses that name.',
+            ),
+          ),
     },
     run: input => commands.insertReturning(input, ['id', 'name']),
   }),
@@ -146,11 +141,95 @@ operations: ({ self, commands, operation, app }) => ({
 ```
 
 This precondition cannot be decided from the input alone. It resolves graph state immediately
-before the operation body. Returning a failure stops the body; returning nothing lets it continue.
+before the operation body. `exists()` is a lazy boolean computation; `thenIf(...)` chooses the
+computation to continue with. Here the true branch fails and the omitted false branch does nothing.
+No row needs to be materialized.
 
 Executable checks are necessarily less transparent than schema constraints. Reflection can expose
 that the operation has a precondition, but it cannot predict the result without executing the
 required reads.
+
+> [!MARGIN] **The shortcut is not the contract.** `thenIf(...)` is fluent composition for the
+> common boolean case. A `pre` check may still return synchronously, return a Promise, or return any
+> executable computation. That freedom is useful, but these code-bearing operation surfaces are
+> less settled than schemas and Selections; their spelling and reflection will keep evolving.
+
+## Check the result with a postcondition
+
+A postcondition receives both the accepted input and the result:
+
+```ts
+contracts: {
+  post: ({ id }, created) =>
+    created.id === id
+      ? undefined
+      : app.operation.createFailure(
+          'unexpected_created_identity',
+          'The created TodoList has a different identity.',
+        ),
+},
+```
+
+Returning a failure changes the operation result. It does not undo effects the body already
+performed, so a postcondition is an assertion—not a transaction or rollback policy.
+
+## Gate execution with requirements
+
+`requires` is for a reusable runtime gate rather than a fact asserted by this operation:
+
+```ts
+rename: operation({
+  requires: [todoListWritesEnabled],
+  input: O.object({
+    list: O.selection(self, { cardinality: 'one' }),
+    name: self.fields.name,
+  }),
+  // ...
+}),
+```
+
+A requirement may inspect the normalized input and runtime context to answer questions such as
+whether a feature is enabled or an actor may attempt the operation. Requirements run before
+contracts and the body, and the same requirement can be installed across a layer of operations.
+
+Ontahí has the requirement seam and a separate permission probe today, while authentication and
+authorization authoring are still being consolidated. `todoListWritesEnabled` above therefore
+stands for a host-supplied requirement; this chapter does not invent a final authorization DSL.
+
+## The operation execution envelope
+
+An operation currently has these distinct extension points:
+
+| Surface | Responsibility |
+| --- | --- |
+| `input` | Describe and validate admissible values. |
+| `requires` | Gate whether execution may be attempted in the current context. |
+| `contracts.pre` / `contracts.post` | Assert dynamic facts immediately around the body. |
+| `concerns` | Wrap execution with cross-cutting behavior such as rate limiting or telemetry. |
+| success effects | Emit events or run follow-up work only after a successful result. |
+
+The runtime order is input validation, requirements, preconditions, concerns around the body,
+postconditions, then success effects. Cache invalidation and host hooks happen after successful
+execution.
+
+`concerns: [...]` is the current middleware seam: a concern receives the next computation and can
+act before it, after it, or around a failure. A success effect is different. The operation body
+returns it alongside its value, and the runtime executes it only after the body and postconditions
+succeed:
+
+```ts
+return app.effects.withEffects(created, [
+  app.effects.event({
+    type: 'todo_list.created',
+    listId: created.id,
+  }),
+]);
+```
+
+`concerns`, success-effect intents, and imperative hooks such as `onSuccess` exist, but are the most
+transitional part of this surface. Prefer semantic inputs, requirements, contracts, and emitted
+events where they fit; use custom middleware and hooks narrowly until their graph-native form is
+settled.
 
 ## Keep the two failures distinct
 
@@ -193,9 +272,8 @@ authority, and the operation must translate its violation into the same expected
 
 The remaining invocation shapes keep their existing meaning:
 
-- `rejected`: a requirement such as authorization refused execution.
+- `rejected`: the runtime refused the invocation before the operation body.
 - `errored`: an unexpected defect or runtime failure occurred.
 
 Use `app.operation.fail(...)` inside `run` when an expected domain answer only becomes known during
-the body. Keep authorization in `requires`. Use `contracts.post` for checking a result, remembering
-that a postcondition is a check—not a rollback policy.
+the body. Keep authorization pressure in `requires` while its policy API matures.
