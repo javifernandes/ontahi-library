@@ -32,7 +32,7 @@ contract. Ontahí projects the task definition that the configured runtime execu
 
 The operation body receives a task context when the runtime runs it. It can report progress, sleep
 without hiding timing semantics, and execute declared steps. In this example `runCompleteAll`
-reports `{ phase: 'updating' }`, completes the open Todos, and returns `{ completed }`.
+reports the `updating` phase, completes the open Todos, and returns `CompleteAllOutput`.
 
 > [!MARGIN] **One operation, not a command plus a job.** A queue-based application often repeats
 > the same use case as an endpoint contract, job payload, status record, and polling DTO. Ontahí
