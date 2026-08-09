@@ -13,7 +13,7 @@ operations: ({ self, commands, operation }) => ({
   rename: operation({
     input: O.object({
       list: O.selection(self, { cardinality: 'one' }),
-      name: field.nonEmptyString({ trim: true }),
+      name: self.fields.name,
     }),
     output: self,
     run: ({ list, name }) =>

@@ -28,15 +28,13 @@ that model is interpreted.
 
 ### Part III — Carrying the Model
 
-10. Capabilities and Runtime Composition
-11. Storage
-12. Transport
+10. [Capabilities and Runtime Composition](03-carrying-the-model/01-capabilities-and-runtime-composition.md)
+11. Storage and Transport Adapters
 
 ### Part IV — Projecting the Application
 
-13. React Runtime: Cache and Invalidation
-14. Reflection and Explorer
-15. The Host Boundary
+12. Browser Projection Internals: Codegen, Cache Identity, and Invalidation
+13. Reflection, Explorer, and Host Responsibilities
 
 The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
 Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability, and
