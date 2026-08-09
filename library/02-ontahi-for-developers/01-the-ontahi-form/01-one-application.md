@@ -42,6 +42,48 @@ operation over HTTP, how to continue durable work, or how to emit telemetry.
 The application binds them. It does not move provider details into the entity, and it does not make
 the runtime rediscover the domain from a second configuration.
 
+## Runtime topology
+
+One semantic application can be interpreted across several processes:
+
+```mermaid
+flowchart LR
+  subgraph Client["Client"]
+    ClientApp["React UI<br/>Entities + hooks"]
+  end
+
+  subgraph Server["Application server"]
+    direction TB
+    Ingress["Bridge / ingress"] --> Runtime["Ontahí app<br/>Operations"]
+    Runtime --> Graph["Data Graph"]
+    Runtime --> Tasks["Task runtime"]
+  end
+
+  subgraph Backend["Workers + persistent state"]
+    direction TB
+    Worker["Durable execution"]
+    Database["Application DB"]
+    TaskRuns["Task runs"]
+  end
+
+  External["External provider"] --> Ingress
+  ClientApp -->|"operation invocation"| Ingress
+  Graph -->|"Queries / Commands"| Database
+  Tasks -->|"dispatch / resume"| Worker
+  Tasks --> TaskRuns
+  Worker -->|"Queries / Commands"| Database
+  Worker -->|"progress / result"| TaskRuns
+  Database ~~~ DatabaseMargin[" "]
+  TaskRuns ~~~ TaskRunsMargin[" "]
+
+  classDef margin fill:transparent,stroke:transparent,color:transparent
+  class DatabaseMargin,TaskRunsMargin margin
+```
+
+This is a logical topology, not a required deployment. `inProcessTasks()` collapses the task
+runtime, worker, and task state into the server process. A persistent runtime may separate them
+without changing the Entity or durable operation contract.
+
 ## A host chooses implementations
 
 The smallest application can use process-local storage and tasks:

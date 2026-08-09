@@ -50,6 +50,58 @@ canonical result used by other runtimes.
 Express or Next.js therefore supplies one invocation bridge, not one hand-authored endpoint per
 operation.
 
+## Two client execution paths
+
+Not every client-side graph action needs the bridge. Ontahí can interpret ordinary Data Graph
+Queries and Commands in a browser runtime backed by Supabase, while domain operations travel as
+semantic intentions to the server:
+
+```mermaid
+flowchart LR
+  subgraph Client["React client"]
+    direction TB
+    DirectHook["Graph hook"]
+    OperationHook["Operation hook"]
+  end
+
+  subgraph Direct["Browser-direct Data Graph"]
+    direction TB
+    Plan["Selection + Query / Command"] --> BrowserRuntime["Supabase browser runtime"]
+  end
+
+  subgraph Bridged["Bridged domain operation"]
+    direction TB
+    Intention["Operation id + semantic input"]
+    Intention --> Bridge["Fetch / Next / Express bridge"]
+    Bridge --> ServerApp["Server Ontahí application"]
+    ServerApp --> DomainOperation["Domain operation"]
+    DomainOperation --> ServerRuntime["Server Data Graph runtime"]
+  end
+
+  Database["Application database"]
+  DirectHook --> Plan
+  BrowserRuntime -->|"PostgREST + RLS"| Database
+  OperationHook --> Intention
+  ServerRuntime -->|"Queries / Commands"| Database
+  Database ~~~ DatabaseMargin[" "]
+
+  classDef margin fill:transparent,stroke:transparent,color:transparent
+  class DatabaseMargin margin
+```
+
+Browser-direct does not bypass Ontahí. The client still authors Entities, Selections, Queries, and
+Commands; the Supabase runtime compiles them and the database enforces its RLS policy. No domain
+operation intention crosses a server boundary. Both paths may reach the same physical database;
+what changes is the authority and the runtime that interprets the work.
+
+The bridge carries something more abstract: “rename this TodoList” or “complete this Selection.”
+The server operation may combine graph work, Capabilities, requirements, contracts, or durable
+execution before producing its canonical result.
+
+Use browser-direct execution only where the declared authority and database policy make that graph
+behavior legitimate. Use a bridged operation when the intention, policy, coordination, secret, or
+runtime belongs on the server.
+
 ## Give an operation explicit HTTP ingress
 
 External systems create different pressure. A webhook already has its own route, authentication,

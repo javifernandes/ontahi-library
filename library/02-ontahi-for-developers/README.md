@@ -56,3 +56,6 @@ React support stays transparent on the main path. Cache behavior and invalidatio
 to the advanced projection section. The main path uses canonical APIs. When no semantic
 replacement exists, a required draft surface is labeled explicitly rather than becoming doctrine
 by appearing in a book.
+
+Use diagrams sparingly where runtime distribution, execution paths, or lifecycle boundaries are
+harder to see in prose. They clarify the model; they do not decorate every chapter.

@@ -65,6 +65,35 @@ final `CompleteAllOutput`.
 The snapshot carries the current status, progress, eventual result, or run error. Keeping the Ref
 separate lets another process, request, or screen resume observation without restarting the work.
 
+The lifecycle crosses runtimes without changing its identity:
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant Server as Application server
+  participant Tasks as Task runtime and store
+  participant Worker as Durable worker
+  participant DB as Application database
+
+  Client->>Server: start Todo.completeAll
+  Server->>Tasks: create run
+  Tasks-->>Server: TaskRunRef
+  Server-->>Client: accepted TaskRunRef
+  Tasks->>Worker: execute or resume
+  Worker->>DB: Queries and Commands
+  Worker->>Tasks: progress and final result
+
+  loop observe run
+    Client->>Server: get snapshot(TaskRunRef)
+    Server->>Tasks: read snapshot
+    Tasks-->>Server: queued / running / completed
+    Server-->>Client: snapshot
+  end
+```
+
+Acceptance, execution, persistence, and observation may happen in different processes. The
+`TaskRunRef` is what keeps them one run.
+
 ## Observe the same run from React
 
 ```tsx
