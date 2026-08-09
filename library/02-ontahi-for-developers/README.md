@@ -29,7 +29,7 @@ that model is interpreted.
 ### Part III — Carrying the Model
 
 10. [Capabilities and Runtime Composition](03-carrying-the-model/01-capabilities-and-runtime-composition.md)
-11. Storage and Transport Adapters
+11. [Storage and Transport Adapters](03-carrying-the-model/02-storage-and-transport-adapters.md)
 
 ### Part IV — Projecting the Application
 
@@ -52,5 +52,6 @@ transport or framework pattern when that contrast makes the pressure behind an O
 concrete; it must not turn into a second tutorial.
 
 React support stays transparent on the main path. Cache behavior and invalidation mechanics belong
-to the advanced projection section. The main path uses only canonical APIs; transitional APIs do
-not become doctrine by appearing in a book.
+to the advanced projection section. The main path uses canonical APIs. When no semantic
+replacement exists, a required draft surface is labeled explicitly rather than becoming doctrine
+by appearing in a book.

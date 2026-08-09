@@ -58,15 +58,15 @@ A persistent host can replace storage without replacing the entity declarations:
 
 ```ts
 const application = ontahi({
-  storage: createPostgresDataGraphStorage({ pool, mappings }),
+  storage: createPostgresDataGraphStorage({ pool }),
   tasks,
   entities: [TodoList, Tag, TodoTag, Todo],
 });
 ```
 
 Ontahí defines the graph behavior that storage must implement. The PostgreSQL adapter interprets
-that behavior as SQL. The host still owns the pool, migrations, physical schema, mappings, process
-lifecycle, and credentials.
+that behavior as SQL and conventionally maps the registered Entities. The host still owns the
+pool, migrations, physical schema, mapping exceptions, process lifecycle, and credentials.
 
 That separation is the recurring form:
 
