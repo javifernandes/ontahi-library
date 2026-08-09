@@ -34,7 +34,7 @@ that model is interpreted.
 
 ### Part IV — Projecting the Application
 
-13. Browser Projection Internals: Codegen, Cache Identity, and Invalidation
+13. [Browser Projection Internals](04-projecting-the-application/01-browser-projection-internals.md)
 14. Reflection, Explorer, and Host Responsibilities
 
 The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
