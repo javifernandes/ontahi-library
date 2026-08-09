@@ -4,6 +4,11 @@ An Entity may need work that does not belong to its graph: send a notification, 
 user, call an external service, or apply a host policy. A Capability names that need. The
 application supplies the implementation.
 
+> [!MARGIN] **A draft, low-level surface.** Today `capabilities` is typed resource injection. It can
+> carry almost anything, which makes it useful, but the injected resources remain opaque to
+> reflection and composition. This API may change as Ontahí reifies recurring concepts instead of
+> turning arbitrary dependency injection into the final model.
+
 ## Declare the need
 
 `TodoList` needs to announce a newly created list:
@@ -33,9 +38,9 @@ export const TodoList = entity({
 });
 ```
 
-`uses.capabilities` is the Entity's dependency contract. It types the application surface this
-Entity expects. `notifications` is vocabulary of this application;
-Ontahí does not prescribe a universal notification service.
+`uses.capabilities` is currently a TypeScript witness for the application surface this Entity
+expects. `notifications` is vocabulary of this application; Ontahí does not prescribe a universal
+notification service.
 
 ## Use it inside the operation
 
@@ -74,12 +79,12 @@ operation is where both become one application intention.
 The host implements the Capability at the application root:
 
 ```ts
-const todoNotifications = {
+const todoNotifications = adaptEffectMethods<
+  TodoCapabilities['runtime']['notifications']
+>({
   todoListCreated: ({ listId, name }) =>
-    Effect.sync(() => {
-      console.info(`[todo] created list ${listId}: ${name}`);
-    }),
-} satisfies TodoCapabilities['runtime']['notifications'];
+    console.info(`[todo] created list ${listId}: ${name}`),
+});
 
 export const TodoApplication = ontahi({
   storage: defaultStorage,
@@ -95,6 +100,11 @@ export const TodoApplication = ontahi({
 
 `ontahi(...)` is the composition boundary. It combines semantic declarations with the concrete
 storage, task runtime, and application Capabilities that will interpret them in this process.
+
+The operation consumes one uniform Effect, but a host implementation may be synchronous,
+asynchronous, or already return an Effect. `adaptEffectMethods(...)` normalizes that resource once,
+at the host boundary, and preserves lazy execution. The implementation itself does not need
+`Effect.sync(...)` ceremony.
 
 ## Call the composed Entity from Node
 
@@ -135,12 +145,11 @@ A test can record the same effect without changing `TodoList`:
 ```ts
 const recorded: Array<{ listId: string; name: string }> = [];
 
-const notifications: TodoCapabilities['runtime']['notifications'] = {
-  todoListCreated: input =>
-    Effect.sync(() => {
-      recorded.push(input);
-    }),
-};
+const notifications = adaptEffectMethods<
+  TodoCapabilities['runtime']['notifications']
+>({
+  todoListCreated: input => recorded.push(input),
+});
 
 const TestApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
@@ -158,7 +167,8 @@ A Capability does not make multiple effects atomic. In the example, persistence 
 notification. If both must succeed or recover together, the operation and host need a transaction,
 an outbox, compensation, or durable coordination that matches that guarantee.
 
-Today `uses.capabilities` is a typed dependency witness. Ontahí does not yet reflect these
-dependencies or validate the complete Capability graph at composition time. Keep the declared
-surface narrow: it documents and types what the Entity uses, but the host remains responsible for
-supplying it correctly.
+Today `uses.capabilities` is a typed dependency witness over low-level injected resources. Ontahí
+does not yet reflect these dependencies or validate the complete Capability graph at composition
+time. Keep the declared surface narrow: it documents and types what the Entity uses, but the host
+remains responsible for supplying it correctly. Repeated semantic needs may eventually deserve
+their own declared model rather than another arbitrary object path.

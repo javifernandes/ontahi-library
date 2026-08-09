@@ -52,7 +52,7 @@ This is the shortest complete account of the current framework.
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
 | Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
 | Durable operation | Canonical, second pass | `operation({ durable: {...}, run })`; start with the bound operation and observe its `TaskRunRef` | Todo `completeAll`, task runtime, React lifecycle hook, and workflow tests | Start acceptance, progress snapshots, final output, and failure are separate lifecycle values. Polling is the current portable observation baseline; durability guarantees come from the configured executor and task storage. |
-| Capabilities | Canonical pattern | `uses.capabilities` plus root `capabilities` | Todo notification Capability, BookOps exercises and notification capabilities | Entities name narrow needs; the host supplies implementations. Capability names are host vocabulary. The dependency is typed today, not reflected or checked for completeness at composition time. |
+| Capabilities | Canonical need; draft low-level API | `uses.capabilities` plus root `capabilities` | Todo notification Capability, BookOps exercises and notification capabilities | Typed resource injection connects Entities to host implementations, but the resources are opaque and may later become more semantic declarations. Sync, async, and Effect providers normalize once at the host boundary. Dependencies are not yet reflected or checked for completeness at composition time. |
 | Cross-entity dependency | Canonical | `uses.entities`, resolved through the application catalog | Todo and unified BookOps entities | Makes semantic dependencies explicit and independent of registration order. |
 | Storage | Canonical port | one `storage` supplied to `ontahi()` | in-memory, PostgreSQL, Supabase bindings | Ontahí owns execution semantics; the host chooses persistence and physical mapping. |
 | Transport | Canonical adapter boundary | mount a composed application through a runtime adapter | Express and Next.js packages | Transport resolves and invokes operations; it does not redefine them. |
@@ -148,9 +148,10 @@ coordination, durable execution, effects, or a stable public contract.
 
 1. Relations declare topology but do not yet have settled identity or relation-owned behavior.
 2. Relation predicates and relational free-text search remain incomplete.
-3. Capability injection works, but `uses.capabilities` remains a typed witness: dependency
-   reflection and composition-time completeness checks do not yet exist, and framework-owned
-   capability vocabulary is not final.
+3. Capability injection works, but it is a draft low-level resource API and `uses.capabilities`
+   remains a typed witness. Dependency reflection and composition-time completeness checks do not
+   yet exist; recurring concepts risk remaining opaque if arbitrary injection becomes the final
+   model.
 4. `TaskRun` remains application-owned in BookOps instead of being supplied by the durable runtime.
 5. Named and saved selections, selection-language editing, and durable membership snapshots remain
    later concepts.
