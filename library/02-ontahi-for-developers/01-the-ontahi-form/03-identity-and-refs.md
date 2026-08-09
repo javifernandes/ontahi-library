@@ -58,11 +58,8 @@ if (!result.ok) throw new Error(`TodoList.rename failed: ${result.kind}`);
 console.log(result.value);
 ```
 
-The operation boundary promotes the Ref to a one-member Selection. Application code does not need
-to import `Selection` or repeat the entity just to target one known member.
-
-The distinction still matters: a Ref answers “which entity?”; a Selection describes membership
-and may later represent predicates, unions, or many members.
+The operation receives a semantic target, not a caller-owned snapshot. The Ref preserves which
+TodoList the caller means until the runtime interprets that identity.
 
 ## Composite identity
 
@@ -99,4 +96,65 @@ const result = await TodoTag.remove({ assignment });
 if (!result.ok) throw new Error(`TodoTag.remove failed: ${result.kind}`);
 ```
 
-The locator carries both identity fields, and the same Ref-to-Selection promotion applies.
+The locator carries both identity fields, so the association can cross an operation boundary by
+semantic identity.
+
+## The object does not cross the boundary
+
+A React screen may first read and render complete TodoList records:
+
+```tsx
+const lists = useOperationQuery(TodoList.domain.list);
+const rename = useOperation(TodoList.domain.rename);
+
+return lists.data?.map(list => (
+  <button
+    key={list.id}
+    onClick={() =>
+      void rename.executeAsync({
+        list,
+        name: 'Research queue',
+      })
+    }
+  >
+    Rename {list.name}
+  </button>
+));
+```
+
+At the call site, `list` is a materialized object. It may feel like ordinary object-oriented code:
+the UI has a TodoList and acts on that TodoList. But the complete object is not sent back to the
+server. Because TodoList declares its identity, the generated boundary derives a Ref from
+`list.id` and transports the semantic target instead.
+
+The server operation interprets that target in its own runtime. It never treats the fields held by
+the browser as the current or authoritative TodoList.
+
+## One operation, many ways to name its target
+
+An operation becomes more useful when it does not reduce its target to an `entityId` parameter.
+The same `complete` operation can receive identities typed by hand, records selected in the UI, or
+a criterion that has not been evaluated yet:
+
+```tsx
+const complete = useOperation(Todo.domain.complete);
+
+await complete.executeAsync({
+  todos: ['23'],
+});
+
+await complete.executeAsync({
+  todos: selectedTodos,
+});
+
+await complete.executeAsync({
+  todos: Todo.selection(todo => todo.listId.eq('list-research')),
+});
+```
+
+The first call means “complete Todo 23.” The second means “complete these Todos selected in the
+UI.” The third means “complete every Todo in the research list.” No preliminary read is required:
+the criterion remains a lazy description until the operation runs.
+
+The implementation of `complete` is identical in all three cases. Ontahí normalizes each target to
+the operation's semantic input and delegates its interpretation to the runtime.
