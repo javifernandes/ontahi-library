@@ -58,5 +58,61 @@ if (!deleted.ok) throw new Error(`TodoList.delete failed: ${deleted.kind}`);
 The caller uses the entity, its locator, and its operations. It does not construct transport URLs,
 write a storage query, or manually turn the Ref into a Selection.
 
-The React projection comes later, once the browser boundary creates a reason to introduce hooks,
-cache identity, and invalidation.
+## Use the same operations from React
+
+A projected mutation opts into the bridge and declares which reads become stale after success:
+
+```ts
+exposure: 'bridge',
+bridge: { invalidate: [['TodoList']] },
+```
+
+The generated operations then work through `useOperation`:
+
+```tsx
+const createList = useOperation(TodoList.domain.create);
+const renameList = useOperation(TodoList.domain.rename);
+const deleteList = useOperation(TodoList.domain.delete);
+
+return (
+  <div>
+    <button
+      disabled={createList.isExecuting}
+      onClick={() =>
+        void createList.executeAsync({
+          id: crypto.randomUUID(),
+          name: 'Research backlog',
+        })
+      }
+    >
+      Create
+    </button>
+
+    <button
+      disabled={renameList.isExecuting}
+      onClick={() =>
+        void renameList.executeAsync({
+          list: TodoList.refById(selectedListId),
+          name: 'Research queue',
+        })
+      }
+    >
+      Rename
+    </button>
+
+    <button
+      disabled={deleteList.isExecuting}
+      onClick={() =>
+        void deleteList.executeAsync({
+          list: TodoList.refById(selectedListId),
+        })
+      }
+    >
+      Delete
+    </button>
+  </div>
+);
+```
+
+The same Ref form crosses both Node and React boundaries. The hook supplies execution state; the
+operation still owns the mutation.

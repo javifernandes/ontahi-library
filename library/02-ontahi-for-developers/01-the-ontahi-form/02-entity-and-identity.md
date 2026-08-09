@@ -46,8 +46,42 @@ for (const list of result.value) {
 There is no HTTP request, React component, or storage-specific query here. `TodoList.list()` runs
 through the application runtime selected at composition.
 
-The browser will later receive a safe projection of this same operation. The entity itself is not
-a React abstraction.
+## Project the same operation to React
+
+Operations are server-only by default. To make `list` available to a generated browser client, opt
+that operation into the bridge and give repeated reads one identity:
+
+```ts
+list: operation({
+  exposure: 'bridge',
+  output: O.array(self),
+  bridge: { query: [() => 'all'] },
+  run: () => commands.all().orderBy(list => list.name),
+}),
+```
+
+Codegen emits the browser-safe entity. React uses that projection directly:
+
+```tsx
+import { useOperationQuery } from '@ontahi/react/graph';
+import { TodoList } from './generated/client-entities.js';
+
+export const TodoLists = () => {
+  const lists = useOperationQuery(TodoList.domain.list);
+
+  if (lists.isLoading) return <p>Loading lists…</p>;
+  if (lists.isError) return <p>Could not load lists.</p>;
+
+  return (
+    <ul>
+      {lists.data?.map(list => <li key={list.id}>{list.name}</li>)}
+    </ul>
+  );
+};
+```
+
+The hook adds browser lifecycle state; it does not redefine the entity or operation. Query-cache
+mechanics remain outside this first use.
 
 ## One semantic declaration
 

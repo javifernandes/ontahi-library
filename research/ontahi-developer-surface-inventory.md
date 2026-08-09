@@ -1,7 +1,7 @@
 # Ontahí Developer Surface Inventory
 
 Status: working inventory
-Evidence baseline: BookOps `feature/ontahi-todo-list-operations` at `66a249fd`
+Evidence baseline: BookOps `feature/ontahi-todo-list-operations` at `093742fd`
 
 This inventory decides what the first edition of *Ontahí for Developers* may teach as the normal
 way to build an application. It is evidence for the book, not a chapter in the book.
@@ -45,10 +45,10 @@ This is the shortest complete account of the current framework.
 | Entity | Canonical | `entity({ name, fields, locators, identity, relations, uses, operations })` | `@ontahi/core/entity`, every unified BookOps entity | The semantic declaration and operation module are one form. |
 | Field/schema | Canonical | `field.*` and `graphSchema.*`; the book imports the latter as `O` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. |
 | Ref | Canonical | Entity locators and their ref factories | core ref tests, client and server input lowering, Todo explicit refs | Identifies one entity; an operation boundary may promote it to a singleton Selection. |
-| Relation | Canonical, bounded | `relation.belongsTo(...)`, `relation.hasMany(...)` | Todo topology, BookOps cyclic semantic refs | Declares topology and storage evidence; not yet a complete behavior owner. |
+| Relation | Canonical, bounded | Declare with `relation.belongsTo(...)` / `hasMany(...)`; read with `commands.relatedTo(...)` | Todo `listForList`, relation-root runtime tests, BookOps cyclic refs | Declares topology, navigation, and storage evidence; not yet a complete behavior owner. |
 | Selection | Canonical | `Selection.all`, `none`, `where`, `references`, Boolean composition | core algebra tests and all graph runtimes | A serializable description of membership. |
 | Operation input selection | Canonical | `graphSchema.selection(entity, { cardinality })`; pass a Ref directly for one known member | Todo operations, reflection, input normalization, and Explorer tests | Public inputs erase singleton conversion boilerplate; the runner receives a Selection. |
-| Query | Canonical | `commands.where(...).select(...).include(...).orderBy(...).limit(...)` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection. |
+| Query | Canonical | `commands.where(...)` or `commands.relatedTo(...)`, then shape with `select`, `include`, `orderBy`, and `limit` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection or declared relation. |
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
 | Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
 | Durable operation | Canonical, second pass | `operation({ durable: {...}, run })` | Todo `completeAll`, task runtime and workflow tests | Durability is operation metadata interpreted by a task runtime. |
@@ -56,7 +56,7 @@ This is the shortest complete account of the current framework.
 | Cross-entity dependency | Canonical | `uses.entities`, resolved through the application catalog | Todo and unified BookOps entities | Makes semantic dependencies explicit and independent of registration order. |
 | Storage | Canonical port | one `storage` supplied to `ontahi()` | in-memory, PostgreSQL, Supabase bindings | Ontahí owns execution semantics; the host chooses persistence and physical mapping. |
 | Transport | Canonical adapter boundary | mount a composed application through a runtime adapter | Express and Next.js packages | Transport resolves and invokes operations; it does not redefine them. |
-| Browser projection | Canonical when a browser exists | codegen output consumed by `@ontahi/react` | Todo Vite client and BookOps generated entities | Browser-safe projection comes from the application declaration. |
+| Browser projection | Canonical when a browser exists | codegen output consumed by `@ontahi/react`; pass the same Ref inputs to hooks | Todo Vite client and BookOps generated entities | Browser-safe projection and client input types come from the application declaration. |
 | Reflection / Explorer | Canonical inspection surface | reflect the application and mount Explorer | Express example and BookOps Explorer | Inspection consumes the same application model; it is not a second registry. |
 
 ## Advanced surfaces
@@ -67,7 +67,6 @@ These are real parts of Ontahí, but they should appear only where their pressur
 | --- | --- |
 | `entity.ref(name, contract?)` | Solves cyclic or import-sensitive semantic references. Direct entity references remain clearer when cycles are absent. |
 | `operationGroup(...)` | Bounds very large operation families for TypeScript and codegen. Ordinary entities should return an operation record directly. |
-| Relation-root navigation | Expresses reads rooted through another entity's relation. It belongs after ordinary selections and includes. |
 | Named runtime values and cache identities | Connect operation caching and invalidation to derived identities; they are not entity locators. |
 | Graph-direct browser operations | Useful when ubiquitous graph behavior can execute safely in the browser runtime; authority must remain explicit. |
 | Requirements, concerns, layers, effect intents, and telemetry | Cross-cutting runtime composition is supported, but each deserves a focused chapter or reference rather than entering the first entity example. |
