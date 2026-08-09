@@ -1,25 +1,31 @@
 # Identity and Refs
 
-A Ref identifies an entity without loading it.
+A Ref is a value that references one particular instance of an Entity.
 
 ```ts
 import { TodoList } from './graph.js';
 
-const list = TodoList.refById(listId);
+const listA = TodoList.refById('A');
 ```
 
-`listId` can come from a route parameter, a job payload, or a previous operation result. The ref
-contains only semantic identity:
+`listA` is not a TodoList record or a snapshot of its fields. It models the semantic identity of
+that instance as ordinary data:
 
 ```ts
 {
   kind: 'entity-ref',
   entityName: 'TodoList',
-  locator: { id: listId },
+  locator: { id: 'A' },
 }
 ```
 
-It does not claim that the list exists or contain its current fields.
+Like a Promise lets application code speak about a value before that value is available, a Ref
+lets application code describe work involving an Entity instance without first deciding how to
+find it, load it, or transport it. The Ref can cross operation boundaries and become part of a
+Selection while Ontahí's runtime decides when its identity must be interpreted.
+
+The Ref does not claim that the instance exists or contain its current fields. It carries enough
+meaning to refer to it.
 
 ## Act on the Ref
 
@@ -42,12 +48,9 @@ Call it with the Ref directly:
 ```ts
 import { TodoList } from './graph.js';
 
-const listId = process.argv[2];
-if (!listId) throw new Error('Usage: rename-list <list-id>');
-
-const list = TodoList.refById(listId);
+const listA = TodoList.refById('A');
 const result = await TodoList.rename({
-  list,
+  list: listA,
   name: 'Research backlog',
 });
 
