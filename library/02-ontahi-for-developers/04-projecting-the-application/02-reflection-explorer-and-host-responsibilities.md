@@ -56,9 +56,13 @@ Explorer's server projection combines the catalogs into neutral descriptors:
 Those descriptors are plain data. `@ontahi/explorer-react` consumes them to render the overview,
 Entity browser, operation browser, task browser, schemas, topology, and execution forms.
 
+![One reflected application, presented as an Explorer overview of its Entities, operations, tasks, and events.](../assets/explorer/overview.jpg)
+
 This is distinct from the browser codegen projection. Codegen emits typed executable Entities for
 application code. Runtime reflection emits data descriptors for tools that discover the
 application dynamically.
+
+![The Entity Browser follows Book's reflected fields, relations, operations, and topology.](../assets/explorer/entity-book.jpg)
 
 ## Mount the reflective surface
 
@@ -129,6 +133,8 @@ loads the snapshot, and selects which reflected runtime capabilities to register
 Invoking from Explorer is not a special execution path. The reflected invoker sends
 `operationId + input` through the same canonical dispatcher as the generated client. Input is
 validated and only bridge-exposed domain operations are available through the Fetch invoker.
+
+![The Operation Catalog reflects the Fetch Chapter contract as an inspectable schema.](../assets/explorer/operation-fetch-chapter.jpg)
 
 Entity browsing is also explicit. In-memory and PostgreSQL storage bindings can supply reflected
 data reading with the application storage; Supabase has its own reader adapter. The host still
