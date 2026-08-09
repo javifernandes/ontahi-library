@@ -35,7 +35,7 @@ that model is interpreted.
 ### Part IV — Projecting the Application
 
 13. [Browser Projection Internals](04-projecting-the-application/01-browser-projection-internals.md)
-14. Reflection, Explorer, and Host Responsibilities
+14. [Reflection, Explorer, and Host Responsibilities](04-projecting-the-application/02-reflection-explorer-and-host-responsibilities.md)
 
 The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
 Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability,
