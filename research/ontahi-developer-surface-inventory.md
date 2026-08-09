@@ -43,7 +43,7 @@ This is the shortest complete account of the current framework.
 | --- | --- | --- | --- | --- |
 | Application | Canonical | `ontahi({ storage, tasks, capabilities, entities })` | `@ontahi/core/runtime/server`, Todo and BookOps composition roots | The single composition root. |
 | Entity | Canonical | `entity({ name, fields, locators, identity, relations, uses, operations })` | `@ontahi/core/entity`, every unified BookOps entity | The semantic declaration and operation module are one form. |
-| Field/schema | Canonical | `field.*` and `graphSchema.*`; the book imports the latter as `O` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. |
+| Field/schema | Canonical | `field.*` and `graphSchema.*`; the book imports the latter as `O` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. Statically knowable admissibility—including excluded string values—belongs here, not in executable operation preconditions. |
 | Ref | Canonical | Entity locators and their ref factories | core ref tests, client and server input lowering, Todo explicit refs | Identifies one entity; an operation boundary may promote it to a singleton Selection. |
 | Relation | Canonical, bounded | Declare with `relation.belongsTo(...)` / `hasMany(...)`; read with `commands.relatedTo(...)` | Todo `listForList`, relation-root runtime tests, BookOps cyclic refs | Declares topology, navigation, and storage evidence; not yet a complete behavior owner. |
 | Selection | Canonical | `Entity.selection(predicate)`; `Selection.all`, `none`, `references`; Boolean composition | Todo Node/React filters, core algebra tests, and all graph runtimes | A serializable description of membership, shared by UI filters, reads, and operation targets. |
@@ -153,6 +153,9 @@ coordination, durable execution, effects, or a stable public contract.
 5. Named and saved selections, selection-language editing, and durable membership snapshots remain
    later concepts.
 6. Authorization and relationship policies are not yet one settled Ontahí model.
+7. Entity-level uniqueness is not yet a declarative invariant interpreted consistently by storage,
+   operation failures, reflection, and generated clients. A query-based precondition cannot supply
+   the required atomicity on its own.
 
 ## Chapter contract
 

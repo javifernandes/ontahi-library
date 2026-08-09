@@ -1,105 +1,162 @@
 # Operation Contracts and Failures
 
-An operation's input schema says which values may enter. Its contracts say what must be true for
-the operation to proceed. Its failures are expected domain answers, carried as data.
+An operation's input schema says which values may enter. Put every condition knowable from those
+values in that schema. Reserve executable preconditions for facts that must be resolved when the
+operation runs.
 
-## Put shape in the input schema
+## Make static rules visible
 
-`rename` accepts one TodoList and a non-empty name:
+`Archive` is a reserved TodoList name. That is a property of the Entity field, not a dynamic
+precondition:
 
 ```ts
-input: O.object({
-  list: O.selection(self, { cardinality: 'one' }),
-  name: field.nonEmptyString({ trim: true }),
-}),
+export const TodoList = entity({
+  name: 'TodoList',
+  fields: {
+    id: field.id(),
+    name: field.nonEmptyString({
+      trim: true,
+      exclude: {
+        values: ['archive'],
+        caseInsensitive: true,
+      },
+      messages: {
+        exclude: 'Archive is reserved for system use.',
+      },
+    }),
+  },
+  operations: ({ self, commands, operation }) => ({
+    rename: operation({
+      input: O.object({
+        list: O.selection(self, { cardinality: 'one' }),
+        name: self.fields.name,
+      }),
+      output: self,
+      run: ({ list, name }) =>
+        commands.where(list).updateOneReturning({ name }, ['id', 'name']),
+    }),
+  }),
+});
 ```
 
-The same schema validates direct Node calls and transported calls. A blank name is an invalid
-input, not a business decision hidden inside `run`.
+`exclude` is reflected schema data. The server validates it, codegen preserves it, and a UI can
+inspect the same values and message before invoking the operation. Nothing needs to execute to
+discover that `Archive` is outside the accepted set. `rename` reuses `self.fields.name`; inputs
+derived with `O.pick(...)` inherit it too.
 
-## Put a precondition before the body
+## Anticipate the rule in React
 
-Suppose `Archive` is reserved for a list managed by the application:
+The generated operation carries its input schema:
+
+```tsx
+import { safeParseGraphSchema } from '@ontahi/core/data-graph';
+
+const rename = useOperation(TodoList.domain.rename);
+const nameValidation = safeParseGraphSchema(
+  TodoList.domain.rename.input.fields.name,
+  name,
+);
+
+return (
+  <div>
+    <button
+      disabled={!nameValidation.success || rename.isExecuting}
+      onClick={() => rename.execute({ list, name })}
+    >
+      Rename
+    </button>
+
+    {!nameValidation.success && <p>{nameValidation.issues[0]?.message}</p>}
+  </div>
+);
+```
+
+The component consumes the contract; it does not duplicate `archive` as UI knowledge. Another UI
+may render the reflected constraint differently while preserving the same admissible input.
+
+## Keep preconditions dynamic
+
+Uniqueness depends on current application state. A `create` operation may query for an existing
+TodoList before running its command:
 
 ```ts
 operations: ({ self, commands, operation, app }) => ({
-  rename: operation({
-    input: O.object({
-      list: O.selection(self, { cardinality: 'one' }),
-      name: field.nonEmptyString({ trim: true }),
-    }),
+  create: operation({
+    input: O.pick(self, ['id', 'name']).named('CreateTodoListInput'),
     output: self,
     contracts: {
       pre: ({ name }) =>
-        name.toLowerCase() === 'archive'
-          ? app.operation.createFailure(
-              'reserved_list_name',
-              'Archive is reserved for system use.',
-            )
-          : undefined,
+        Effect.gen(function* () {
+          const existing = yield* commands
+            .where(list => list.name.eq(name))
+            .select(list => ({ id: list.id }))
+            .limit(1)
+            .run();
+
+          return existing.length > 0
+            ? app.operation.createFailure(
+                'todo_list_name_taken',
+                'A TodoList already uses that name.',
+              )
+            : undefined;
+        }),
     },
-    run: ({ list, name }) =>
-      commands.where(list).updateOneReturning({ name }, ['id', 'name']),
+    run: input => commands.insertReturning(input, ['id', 'name']),
   }),
 }),
 ```
 
-The precondition receives validated semantic input. Returning a failure stops the operation before
-its body runs. Returning nothing lets it continue.
+This precondition cannot be decided from the input alone. It resolves graph state immediately
+before the operation body. Returning a failure stops the body; returning nothing lets it continue.
 
-A contract names a condition of the operation; it is not controller middleware and it does not
-belong to a particular transport.
+Executable checks are necessarily less transparent than schema constraints. Reflection can expose
+that the operation has a precondition, but it cannot predict the result without executing the
+required reads.
 
-## Handle the answer from Node
+## Keep the two failures distinct
 
 ```ts
-const result = await TodoList.rename({
+const invalid = await TodoList.rename({
   list: 'A',
   name: 'Archive',
 });
 
-if (result.ok) {
-  console.log(result.value.name);
-} else if (
-  result.kind === 'failed' &&
-  result.failure.reason === 'reserved_list_name'
+if (!invalid.ok && invalid.kind === 'input_invalid') {
+  console.error(invalid.issues[0]?.message);
+}
+
+const duplicate = await TodoList.create({
+  id: crypto.randomUUID(),
+  name: 'Research',
+});
+
+if (
+  !duplicate.ok &&
+  duplicate.kind === 'failed' &&
+  duplicate.failure.reason === 'todo_list_name_taken'
 ) {
-  console.error(result.message);
+  console.error(duplicate.message);
 }
 ```
 
-The caller receives one invocation result. `reserved_list_name` is stable application meaning;
-the message is its human-readable explanation.
+`input_invalid` means the value was outside the declared input set and the operation did not
+start. `failed` means execution began and produced an expected domain answer.
 
-## Show the same failure in React
+## A precondition is not a uniqueness invariant
 
-```tsx
-const rename = useOperation(TodoList.domain.rename);
-const [error, setError] = useState<string>();
+Two concurrent `create` operations can both observe that a name is available. A precondition makes
+the dynamic rule and its failure explicit, but it does not make the read and insert atomic by
+itself.
 
-async function submitRename() {
-  const result = await rename.executeAsync({ list, name });
-  setError(result.ok ? undefined : result.message);
-}
-```
+True uniqueness wants to live as a declarative Entity invariant interpreted by storage. Ontahí
+does not yet expose that settled model. Until it does, the database constraint remains the final
+authority, and the operation must translate its violation into the same expected domain failure.
 
-The hook adds execution state; it does not change the operation's failure model. The component may
-show every failure message or branch on a specific reason when the UI has a specific recovery.
+The remaining invocation shapes keep their existing meaning:
 
-## Keep the failure boundary sharp
-
-An invocation has four non-success shapes:
-
-- `input_invalid`: the value did not satisfy the input schema; the operation did not start.
 - `rejected`: a requirement such as authorization refused execution.
-- `failed`: the operation reported an expected domain failure, from a contract or from `run`.
 - `errored`: an unexpected defect or runtime failure occurred.
 
-Use `app.operation.fail(...)` inside `run` when a domain answer only becomes known after reading
-state or calling another capability. Use `contracts.pre` when a rule over validated input must hold
-before the body. Keep authorization in `requires`, where the runtime can decide whether the
-operation may run at all.
-
-Operations also support `contracts.post` for checking their result. A postcondition is a check, not
-a rollback policy; use it only with an execution boundary whose atomicity or compensation matches
-the invariant.
+Use `app.operation.fail(...)` inside `run` when an expected domain answer only becomes known during
+the body. Keep authorization in `requires`. Use `contracts.post` for checking a result, remembering
+that a postcondition is a check—not a rollback policy.
