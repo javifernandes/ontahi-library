@@ -13,21 +13,41 @@ Ontahí currently has two different HTTP shapes:
 The Express adapter mounts the already composed application:
 
 ```ts
+const ontahiHttp = {
+  mountPath: '/runtime/ontahi',
+};
+
 const server = express();
 
 server.use(
   ontahiExpress(TodoApplication, {
+    ...ontahiHttp,
     explorer: { indexFile },
   }),
 );
 ```
 
-One mount exposes the application surfaces that have an HTTP representation:
+`mountPath` places every Ontahí-owned HTTP surface below one host-selected root:
 
-- `POST /operations` invokes operations and answers permission checks;
-- `GET /operations/tasks/:taskId/:runId` observes durable runs;
-- `GET /application` returns reflected application metadata;
-- `/explorer/*` serves inspection endpoints when Explorer is enabled.
+- `POST /runtime/ontahi/operations` invokes operations and answers permission checks;
+- `GET /runtime/ontahi/operations/tasks/:taskId/:runId` observes durable runs;
+- `GET /runtime/ontahi/application` returns reflected application metadata;
+- `/runtime/ontahi/explorer/*` serves inspection endpoints when Explorer is enabled.
+
+The client receives the same host configuration:
+
+```ts
+const bridge = createFetchOperationBridgeAdapter(ontahiHttp);
+```
+
+The bridge derives both the invocation and task-observation endpoints. There is no global discovery
+step: the mount root is deployment configuration supplied to each runtime. This also allows one
+Express application to host several Ontahí applications under different roots.
+
+> [!MARGIN] **Express configuration stops at the adapter boundary.** Mount and surface paths,
+> Explorer exposure, ingress body limits, and error reporting belong here. CORS, authentication,
+> rate limiting, request identity, and trust-proxy policy remain ordinary host middleware unless a
+> future Ontahí contract gives them semantic meaning.
 
 The bridge envelope contains an operation identity and opaque input:
 
@@ -107,17 +127,17 @@ runtime belongs on the server.
 External systems create different pressure. A webhook already has its own route, authentication,
 headers, event vocabulary, delivery identity, and payload shape.
 
-A production BookOps operation, shortened to its ingress-bearing contract, declares where one
-normalized provider channel enters it:
+Suppose an application needs to synchronize content after a GitHub push. The operation can remain
+available through the generic bridge and also declare a provider-specific entrance:
 
 ```ts
 syncFromGithubPush: operation({
-  exposure: 'server-only',
+  exposure: 'bridge',
   input: SyncFromGithubPushInputSchema,
   ingress: [
     ingress.http({
       method: 'POST',
-      route: '/api/ingress/github/webhook',
+      route: '/webhooks/github',
       provider: 'github-webhook',
       channel: 'source-control.push',
     }),
@@ -126,8 +146,13 @@ syncFromGithubPush: operation({
 }),
 ```
 
-`server-only` keeps the operation out of the first-party browser bridge. Its explicit ingress is a
-separate decision: an authenticated GitHub push may still request that operation.
+`Content.syncFromGithubPush(...)` and the generic operation bridge still work. The explicit ingress
+adds another way to request the same operation under the custom route. If the operation should only
+be reachable through the external integration, it can instead use `exposure: 'server-only'`.
+
+With the earlier mount root, the public webhook URL is
+`/runtime/ontahi/webhooks/github`. The declared route stays relative to the Ontahí application; the
+host decides where the complete runtime lives.
 
 The route is reflected with the operation. Explorer and the host can discover it from the same
 application model; no generated endpoint registry is required.
@@ -157,32 +182,38 @@ HTTP request
   -> operation
 ```
 
-BookOps composes that boundary once:
+The application composes that boundary once:
 
 ```ts
-const ingressRouter = createGraphHttpIngressRouter({
-  routes: BookopsDataGraphApi.listHttpIngress(),
-  providers: {
-    'github-webhook': createGitHubWebhookIngressProvider({
-      getSecret: requireGitHubWebhookSecret,
-    }),
-  },
-  dispatch: createGraphHttpIngressOperationDispatcher({ dispatcher }),
-});
-
-export const POST = (request: Request) => ingressRouter.handle(request);
+server.use(
+  ontahiExpress(Application, {
+    mountPath: '/runtime/ontahi',
+    ingress: {
+      providers: {
+        'github-webhook': createGitHubWebhookIngressProvider({
+          getSecret: requireGitHubWebhookSecret,
+        }),
+      },
+    },
+  }),
+);
 ```
 
-`dispatcher` is the same transport-neutral operation dispatcher used by the first-party bridge.
-Only the path from the external request to its semantic input is provider-specific.
+`ontahiExpress(...)` reads the reflected routes and supplies the same transport-neutral dispatcher
+used by the first-party bridge. The provider registry is the only application-specific transport
+wiring: it verifies and normalizes each external protocol.
+
+The provider contract itself does not depend on Express. A Next.js, Koa, or future HTTP adapter can
+reuse the registry and the canonical ingress router while owning its framework-specific raw request
+and response conversion.
 
 ## One webhook route, different operations
 
-A provider endpoint does not have to equal one operation. BookOps uses the same GitHub webhook
-route for at least two channels:
+A provider endpoint does not have to equal one operation. An application integrated with GitHub can
+use the same webhook route for several typed channels:
 
-- `source-control.push` enters the book-sync operation;
-- `source-control.installation.deleted` enters the installation-removal operation.
+- `source-control.push` enters a content-sync operation;
+- `source-control.installation.deleted` enters an integration-removal operation.
 
 The provider understands GitHub's event vocabulary and emits the channel. Reflected ingress
 metadata selects the operation that owns that meaning. Neither operation contains signature code
@@ -192,6 +223,12 @@ or a switch over every GitHub event.
 > an operation invocation requests application work. The provider and ingress mapping cross that
 > boundary deliberately. This leaves room for one event to be ignored, invoke one operation, or
 > eventually fan out without pretending the two concepts are identical.
+
+> [!MARGIN] **Channels point toward a wider event model.** Today an ingress channel lets an
+> operation subscribe to one normalized external event. The same vocabulary could eventually join
+> events produced by Entities and graph changes with events received from third-party systems. That
+> would let workflows compose both worlds without making an event and an operation invocation the
+> same thing. This unification is a direction, not yet a settled event API.
 
 ## Keep delivery semantics explicit
 
@@ -203,9 +240,9 @@ A durable operation can return a run reference quickly and continue elsewhere; t
 webhook acknowledgement policy, retries, raw-body handling, secrets, correlation, and observability.
 
 > [!MARGIN] **Current low-level surface.** `ingress.http(...)` and its reflected route are the stable
-> direction. Provider registries, router mounting, delivery context, and resource binding remain
-> low-level APIs in motion. They should not force Express, Next.js, or a provider name into the
-> enduring domain meaning of an operation.
+> direction. HTTP adapters can now mount reflected routes from a provider registry, while delivery
+> context, event fan-out, and resource binding remain APIs in motion. They should not force Express,
+> Next.js, or another host technology into the enduring domain meaning of an operation.
 
 The same dispatcher boundary can be carried by Fetch, Express, Next.js, a webhook, or a future
 queue or CLI adapter. Transport changes how an invocation travels; it does not redefine what the
