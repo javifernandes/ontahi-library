@@ -5,28 +5,25 @@ Domain operations name the ways an entity may change.
 ```ts
 operations: ({ self, commands, operation }) => ({
   create: operation({
-    input: graphSchema.pick(self, ['id', 'name']).named('CreateTodoListInput'),
+    input: O.pick(self, ['id', 'name']).named('CreateTodoListInput'),
     output: self,
-    bridge: { invalidate: [['TodoList']] },
     run: input => commands.insertReturning(input, ['id', 'name']),
   }),
 
   rename: operation({
-    input: graphSchema.object({
-      list: graphSchema.selection(self, { cardinality: 'one' }),
+    input: O.object({
+      list: O.selection(self, { cardinality: 'one' }),
       name: field.nonEmptyString({ trim: true }),
     }),
     output: self,
-    bridge: { invalidate: [['TodoList']] },
     run: ({ list, name }) =>
       commands.where(list).updateOneReturning({ name }, ['id', 'name']),
   }),
 
   delete: operation({
-    input: graphSchema.object({
-      list: graphSchema.selection(self, { cardinality: 'one' }),
+    input: O.object({
+      list: O.selection(self, { cardinality: 'one' }),
     }),
-    bridge: { invalidate: [['TodoList']] },
     run: ({ list }) => commands.where(list).deleteOne(),
   }),
 }),
@@ -35,28 +32,31 @@ operations: ({ self, commands, operation }) => ({
 The input schema is the public contract. The command is the storage-neutral effect. `create`,
 `rename`, and `delete` are domain vocabulary available to every host.
 
-## Call them from React
+## Use them from Node
 
 ```ts
-const createList = useOperation(TodoList.domain.create);
-const renameList = useOperation(TodoList.domain.rename);
-const deleteList = useOperation(TodoList.domain.delete);
+import { TodoList } from './graph.js';
 
-const id = crypto.randomUUID();
+const created = await TodoList.create({
+  id: crypto.randomUUID(),
+  name: 'Research backlog',
+});
+if (!created.ok) throw new Error(`TodoList.create failed: ${created.kind}`);
 
-await createList.executeAsync({ id, name: 'Research backlog' });
-await renameList.executeAsync({
-  list: TodoList.refById(id),
+const list = TodoList.refById(created.value.id);
+
+const renamed = await TodoList.rename({
+  list,
   name: 'Research queue',
 });
-await deleteList.executeAsync({
-  list: TodoList.refById(id),
-});
+if (!renamed.ok) throw new Error(`TodoList.rename failed: ${renamed.kind}`);
+
+const deleted = await TodoList.delete({ list });
+if (!deleted.ok) throw new Error(`TodoList.delete failed: ${deleted.kind}`);
 ```
 
-The component does not construct URLs or duplicate input and output types. The operation projection
-already carries them.
+The caller uses the entity, its locator, and its operations. It does not construct transport URLs,
+write a storage query, or manually turn the Ref into a Selection.
 
-`bridge.invalidate` declares that a successful mutation makes TodoList queries stale. The React
-runtime uses that declaration to refresh `useOperationQuery(TodoList.domain.list)`. The cache model
-is important, but it is not required to use the operation; it gets its own advanced chapter.
+The React projection comes later, once the browser boundary creates a reason to introduce hooks,
+cache identity, and invalidation.

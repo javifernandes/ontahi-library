@@ -43,9 +43,10 @@ Selection, Query, Command, Domain Operation, Capability, and Runtime each carry 
 
 ## Writing posture
 
-Lead with executable form. Use the application first from ordinary Node code, then show the same
-surface through React. Explain an abstraction when the code creates pressure for its name. Prefer
-one complete example over a catalog of disconnected features.
+Lead with executable form. Use the application first from ordinary Node code. Introduce the React
+projection only when the browser boundary creates pressure for it. Explain an abstraction when the
+code creates pressure for its name. Prefer one complete example over a catalog of disconnected
+features.
 
 React support stays transparent on the main path. Cache behavior and invalidation mechanics belong
 to the advanced projection section. The main path uses only canonical APIs; transitional APIs do

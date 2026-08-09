@@ -1,7 +1,7 @@
 # Ontahí Developer Surface Inventory
 
 Status: working inventory
-Evidence baseline: BookOps `feature/ontahi-semantic-entity-refs` at `8d94ed81`
+Evidence baseline: BookOps `feature/ontahi-todo-list-operations` at `66a249fd`
 
 This inventory decides what the first edition of *Ontahí for Developers* may teach as the normal
 way to build an application. It is evidence for the book, not a chapter in the book.
@@ -43,14 +43,14 @@ This is the shortest complete account of the current framework.
 | --- | --- | --- | --- | --- |
 | Application | Canonical | `ontahi({ storage, tasks, capabilities, entities })` | `@ontahi/core/runtime/server`, Todo and BookOps composition roots | The single composition root. |
 | Entity | Canonical | `entity({ name, fields, locators, identity, relations, uses, operations })` | `@ontahi/core/entity`, every unified BookOps entity | The semantic declaration and operation module are one form. |
-| Field/schema | Canonical | `field.*` and `graphSchema.*` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. |
-| Ref | Canonical | Entity locators and their ref factories | core ref tests, client input lowering, Todo explicit selections | Identifies one entity; it is not a selection or loaded record. |
+| Field/schema | Canonical | `field.*` and `graphSchema.*`; the book imports the latter as `O` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. |
+| Ref | Canonical | Entity locators and their ref factories | core ref tests, client and server input lowering, Todo explicit refs | Identifies one entity; an operation boundary may promote it to a singleton Selection. |
 | Relation | Canonical, bounded | `relation.belongsTo(...)`, `relation.hasMany(...)` | Todo topology, BookOps cyclic semantic refs | Declares topology and storage evidence; not yet a complete behavior owner. |
 | Selection | Canonical | `Selection.all`, `none`, `where`, `references`, Boolean composition | core algebra tests and all graph runtimes | A serializable description of membership. |
-| Operation input selection | Canonical | `graphSchema.selection(entity, { cardinality })` | Todo `complete`/`assignTags`, reflection and Explorer tests | Transport hydrates the semantic value for server execution. |
+| Operation input selection | Canonical | `graphSchema.selection(entity, { cardinality })`; pass a Ref directly for one known member | Todo operations, reflection, input normalization, and Explorer tests | Public inputs erase singleton conversion boilerplate; the runner receives a Selection. |
 | Query | Canonical | `commands.where(...).select(...).include(...).orderBy(...).limit(...)` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection. |
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
-| Domain operation | Canonical | `operation({ input, output, run, ... })` inside `entity.operations` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
+| Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
 | Durable operation | Canonical, second pass | `operation({ durable: {...}, run })` | Todo `completeAll`, task runtime and workflow tests | Durability is operation metadata interpreted by a task runtime. |
 | Capabilities | Canonical pattern | `uses.capabilities` plus root `capabilities` | BookOps exercises and notification capabilities | Entities name narrow needs; the host supplies implementations. Capability names are host vocabulary. |
 | Cross-entity dependency | Canonical | `uses.entities`, resolved through the application catalog | Todo and unified BookOps entities | Makes semantic dependencies explicit and independent of registration order. |
@@ -123,6 +123,16 @@ real textual, structural, or package-level language boundary.
 `ontahi(...)` is the only application-composition form in the main narrative. Lower-level graph,
 architecture, and application constructors belong to adapter/reference material.
 
+### Bound entities are the ordinary server API
+
+Import entities from the application composition module and call their operations directly:
+`TodoList.list()` and `TodoList.rename({ list, name })`. The lower-level application invocation API
+remains runtime machinery, not the main authoring form.
+
+When an operation expects a Selection and the caller already has one Entity Ref, the public input
+accepts that Ref and the runner normalizes it to a singleton Selection. This removes ceremony
+without erasing the semantic distinction.
+
 ### Graph behavior is ubiquitous; domain operations must earn their name
 
 Reading, selecting, inserting, updating, and deleting are graph capabilities. A named domain
@@ -135,10 +145,9 @@ coordination, durable execution, effects, or a stable public contract.
 2. Relation predicates and relational free-text search remain incomplete.
 3. Capability injection works; the canonical framework-owned capability vocabulary is not final.
 4. `TaskRun` remains application-owned in BookOps instead of being supplied by the durable runtime.
-5. Entity-ref operation inputs still expose transitional authoring machinery.
-6. Named and saved selections, selection-language editing, and durable membership snapshots remain
+5. Named and saved selections, selection-language editing, and durable membership snapshots remain
    later concepts.
-7. Authorization and relationship policies are not yet one settled Ontahí model.
+6. Authorization and relationship policies are not yet one settled Ontahí model.
 
 ## Chapter contract
 

@@ -3,8 +3,9 @@
 A Ref identifies an entity without loading it.
 
 ```ts
-const lists = TodoApplication.graph.entities.TodoList;
-const list = lists.refById(listId);
+import { TodoList } from './graph.js';
+
+const list = TodoList.refById(listId);
 ```
 
 `listId` can come from a route parameter, a job payload, or a previous operation result. The ref
@@ -20,37 +21,33 @@ contains only semantic identity:
 
 It does not claim that the list exists or contain its current fields.
 
-## Act on the ref from Node
+## Act on the Ref
 
 An operation that accepts one TodoList declares that target as a Selection:
 
 ```ts
 rename: operation({
-  input: graphSchema.object({
-    list: graphSchema.selection(self, { cardinality: 'one' }),
+  input: O.object({
+    list: O.selection(self, { cardinality: 'one' }),
     name: field.nonEmptyString({ trim: true }),
   }),
   output: self,
-  bridge: { invalidate: [['TodoList']] },
   run: ({ list, name }) =>
     commands.where(list).updateOneReturning({ name }, ['id', 'name']),
 }),
 ```
 
-Ordinary Node code turns the ref into a one-member Selection and invokes the operation:
+Call it with the Ref directly:
 
 ```ts
-import { Selection } from '@ontahi/core/data-graph';
-import { TodoApplication } from './graph.js';
+import { TodoList } from './graph.js';
 
 const listId = process.argv[2];
 if (!listId) throw new Error('Usage: rename-list <list-id>');
 
-const lists = TodoApplication.graph.entities.TodoList;
-const list = lists.refById(listId);
-
-const result = await TodoApplication.invokeOperation(lists.domain.rename, {
-  list: Selection.references(lists, [list]),
+const list = TodoList.refById(listId);
+const result = await TodoList.rename({
+  list,
   name: 'Research backlog',
 });
 
@@ -58,26 +55,15 @@ if (!result.ok) throw new Error(`TodoList.rename failed: ${result.kind}`);
 console.log(result.value);
 ```
 
-The Ref answers “which entity?”. The Selection answers “which members?”. The operation owns what
-renaming means.
+The operation boundary promotes the Ref to a one-member Selection. Application code does not need
+to import `Selection` or repeat the entity just to target one known member.
 
-## The transparent React form
-
-The client accepts the same ref directly and normalizes it to the operation's one-member Selection:
-
-```ts
-const renameList = useOperation(TodoList.domain.rename);
-
-await renameList.executeAsync({
-  list: TodoList.refById(listId),
-  name: 'Research backlog',
-});
-```
-
-The default identity also permits a plain ID or an entity record. An explicit ref keeps the domain
-identity visible and continues to work when a locator is composite.
+The distinction still matters: a Ref answers “which entity?”; a Selection describes membership
+and may later represent predicates, unions, or many members.
 
 ## Composite identity
+
+Some identities need more than one field:
 
 ```ts
 export const TodoTag = entity({
@@ -90,14 +76,24 @@ export const TodoTag = entity({
     refByTodoAndTag: ['todoId', 'tagId'],
   },
   identity: 'refByTodoAndTag',
+  operations: ({ self, commands, operation }) => ({
+    remove: operation({
+      input: O.object({
+        assignment: O.selection(self, { cardinality: 'one' }),
+      }),
+      run: ({ assignment }) => commands.where(assignment).deleteOne(),
+    }),
+  }),
 });
 ```
 
-Given records returned by real operations, the association ref needs no synthetic join-table ID:
+Given records returned by real operations, the association needs no synthetic join-table ID:
 
 ```ts
 const assignment = TodoTag.refByTodoAndTag(todo.id, urgentTag.id);
-const assignments = Selection.references(TodoTag, [assignment]);
+const result = await TodoTag.remove({ assignment });
+
+if (!result.ok) throw new Error(`TodoTag.remove failed: ${result.kind}`);
 ```
 
-That Selection can be passed to any operation that targets TodoTag assignments.
+The locator carries both identity fields, and the same Ref-to-Selection promotion applies.

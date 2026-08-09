@@ -1,8 +1,11 @@
 # An Entity at Work
 
-An Entity declares a named kind of thing and the operations that belong to it.
+An Entity declares a named kind of thing and the operations that belong to it. The book imports
+`graphSchema` as `O` to keep schema expressions compact.
 
 ```ts
+import { graphSchema as O } from '@ontahi/core/data-graph';
+
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
@@ -11,15 +14,9 @@ export const TodoList = entity({
   },
   locators: { refById: 'id' },
   identity: 'refById',
-  domainOperationDefaults: {
-    authority: 'server',
-    exposure: 'bridge',
-    layer: 'todos',
-  },
   operations: ({ self, commands, operation }) => ({
     list: operation({
-      output: graphSchema.array(self),
-      bridge: { query: [() => 'all'] },
+      output: O.array(self),
       run: () => commands.all().orderBy(list => list.name),
     }),
   }),
@@ -31,14 +28,13 @@ important addition is `list`: a typed operation whose implementation is a graph 
 
 ## Use it from Node
 
-`ontahi()` binds the declaration to the application's storage and runtime. Ordinary Node code can
-invoke the resulting operation directly:
+Import the entity from the module that composes the application. At that point it is bound to the
+selected runtime and its operations can be called directly:
 
 ```ts
-import { TodoApplication } from './graph.js';
+import { TodoList } from './graph.js';
 
-const lists = TodoApplication.graph.entities.TodoList;
-const result = await TodoApplication.invokeOperation(lists.domain.list, undefined);
+const result = await TodoList.list();
 
 if (!result.ok) throw new Error(`TodoList.list failed: ${result.kind}`);
 
@@ -47,39 +43,14 @@ for (const list of result.value) {
 }
 ```
 
-There is no HTTP request, React component, or storage-specific query here. The application executes
-the operation through the runtime selected at composition.
+There is no HTTP request, React component, or storage-specific query here. `TodoList.list()` runs
+through the application runtime selected at composition.
 
-## Use the same operation from React
+The browser will later receive a safe projection of this same operation. The entity itself is not
+a React abstraction.
 
-Codegen projects the browser-safe side of the same entity. The React hook consumes that projection:
+## One semantic declaration
 
-```tsx
-const lists = useOperationQuery(TodoList.domain.list);
-
-if (lists.isLoading) return <p>Loading lists…</p>;
-if (!lists.data) return null;
-
-return (
-  <ul>
-    {lists.data.map(list => (
-      <li key={list.id}>{list.name}</li>
-    ))}
-  </ul>
-);
-```
-
-React is one caller of the Ontahí application. It receives typed data and lifecycle state; the
-entity and operation remain independent of React. Cache mechanics come later.
-
-## What the declaration owns
-
-An entity may also declare:
-
-- display and freshness metadata;
-- refs and relations;
-- application dependencies through `uses`;
-- graph and domain operations.
-
-These are facets of one semantic entity, not parallel schemas for Node, React, storage, reflection,
-or Explorer.
+The entity is the shared source for identity, graph behavior, operations, reflection, storage
+adapters, and generated projections. Those surfaces interpret one declaration; they are not
+parallel schemas.
