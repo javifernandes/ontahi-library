@@ -24,7 +24,7 @@ that model is interpreted.
 6. [Selection: One Set, Many Uses](02-changing-state/02-selection-one-set-many-uses.md)
 7. [Queries and Commands](02-changing-state/03-queries-and-commands.md)
 8. [Operation Contracts and Failures](02-changing-state/04-operation-contracts-and-failures.md)
-9. Durable Operations
+9. [Durable Operations](02-changing-state/05-durable-operations.md)
 
 ### Part III — Carrying the Model
 
