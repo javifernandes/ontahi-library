@@ -41,6 +41,20 @@ The sequence follows the canonical-surface inventory. Its distinctions are delib
 Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability,
 Ingress, and Runtime each carry a different job.
 
+## Executable spine
+
+The code builds progressively: a fence may omit imports or defaults introduced earlier, but its
+public identifiers and call shapes match the current packages unless the text labels a surface as
+draft or transitional. The complete
+[`todo-express` application](https://github.com/javifernandes/bookops/tree/main/ontahi/examples/todo-express)
+checks the canonical path through code generation, server and browser typechecking, and integration
+tests. Its server declarations live in
+[`src/todo.ts`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/src/todo.ts),
+its React use in
+[`client/src/App.tsx`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/client/src/App.tsx),
+and its end-to-end assertions in
+[`test/application.test.ts`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/test/application.test.ts).
+
 ## Writing posture
 
 Lead with executable form. Use the application first from ordinary Node code. Introduce the React

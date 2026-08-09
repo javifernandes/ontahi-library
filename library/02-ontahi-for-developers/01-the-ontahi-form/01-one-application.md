@@ -147,3 +147,6 @@ middleware stays with the host.
 
 The next chapter begins inside the entity declaration: the place where a thing receives fields,
 identity, relations, dependencies, and operations.
+
+The complete application is runnable in the
+[`todo-express` example](https://github.com/javifernandes/bookops/tree/main/ontahi/examples/todo-express).

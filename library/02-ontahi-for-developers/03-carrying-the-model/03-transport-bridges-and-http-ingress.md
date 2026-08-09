@@ -56,16 +56,27 @@ The bridge envelope contains an operation identity and opaque input:
   kind: 'invoke',
   operationId: 'TodoList.rename',
   input: {
-    list: 'list-inbox',
+    list: {
+      kind: 'selection',
+      entityName: 'TodoList',
+      expression: {
+        kind: 'references',
+        refs: [{
+          kind: 'entity-ref',
+          entityName: 'TodoList',
+          locator: { id: 'list-inbox' },
+        }],
+      },
+    },
     name: 'Reading queue',
   },
 }
 ```
 
-Application code does not normally construct this envelope. The generated browser Entity and its
-React hooks do it through the bridge adapter. The server dispatcher resolves the operation,
-normalizes Refs and Selections, validates input, checks authority, executes it, and returns the same
-canonical result used by other runtimes.
+Application code does not normally construct this envelope. It passes an ID, Ref, record, or
+Selection to the generated Entity; input normalization produces the semantic Selection above
+before the bridge sends it. The server dispatcher resolves the operation, validates that input,
+checks authority, executes it, and returns the same canonical result used by other runtimes.
 
 Express or Next.js therefore supplies one invocation bridge, not one hand-authored endpoint per
 operation.
