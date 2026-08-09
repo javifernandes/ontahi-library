@@ -44,35 +44,74 @@ inspect the same values and message before invoking the operation. Nothing needs
 discover that `Archive` is outside the accepted set. `rename` reuses `self.fields.name`; inputs
 derived with `O.pick(...)` inherit it too.
 
-## Anticipate the rule in React
+## Validate an operation input
 
-The generated operation carries its input schema:
+The operation owns the parser for its complete input:
+
+```ts
+const validation = TodoList.domain.rename.input.safeParse({
+  list: TodoList.refById('list-research'),
+  name: 'Archive',
+});
+
+if (!validation.success) {
+  console.error(validation.issues[0]?.message);
+}
+```
+
+`safeParse` accepts the same public values as the operation. It validates fields and normalizes
+Refs or identity values into the semantic input the runtime understands. This is the low-level API
+for code that needs to inspect a draft without executing it.
+
+## Own the draft and execution together in React
+
+When a component is editing the input it will later invoke, `useOperation` keeps those two parts as
+one unit:
 
 ```tsx
-import { safeParseGraphSchema } from '@ontahi/core/data-graph';
-
-const rename = useOperation(TodoList.domain.rename);
-const nameValidation = safeParseGraphSchema(
-  TodoList.domain.rename.input.fields.name,
-  name,
+const {
+  input,
+  execute: rename,
+  isExecuting,
+} = useOperation(
+  TodoList.domain.rename,
+  {
+    list: TodoList.refById(selectedListId),
+    name: '',
+  },
 );
 
 return (
-  <div>
+  <form
+    onSubmit={event => {
+      event.preventDefault();
+      rename();
+    }}
+  >
+    <input
+      value={input.draft.name}
+      onChange={event => input.setField('name', event.target.value)}
+    />
+
     <button
-      disabled={!nameValidation.success || rename.isExecuting}
-      onClick={() => rename.execute({ list, name })}
+      disabled={!input.isValid || isExecuting}
+      type="submit"
     >
       Rename
     </button>
 
-    {!nameValidation.success && <p>{nameValidation.issues[0]?.message}</p>}
-  </div>
+    {input.issue('name') && <p>{input.issue('name')?.message}</p>}
+  </form>
 );
 ```
 
-The component consumes the contract; it does not duplicate `archive` as UI knowledge. Another UI
-may render the reflected constraint differently while preserving the same admissible input.
+`input.draft` is the editable public value. `input.value` is its parsed, normalized value when
+`input.isValid` is true. Calling `rename()` executes that value, so the component cannot validate
+one object and accidentally send another. The server still validates the input authoritatively.
+
+This is a headless operation-input model, not a visual form framework. The component decides how to
+render fields and errors; the operation supplies their meaning. Another UI can consume the same
+contract without duplicating `archive` as UI knowledge.
 
 ## Keep preconditions dynamic
 

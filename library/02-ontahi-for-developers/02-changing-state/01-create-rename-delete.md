@@ -32,6 +32,12 @@ operations: ({ self, commands, operation }) => ({
 The input schema is the public contract. The command is the storage-neutral effect. `create`,
 `rename`, and `delete` are domain vocabulary available to every host.
 
+> [!MARGIN] **The semantic identity of `name`.** A transport API often redeclares `name` in
+> its request DTO. Even when both declarations validate the same values today, that loses the fact
+> that this input _is_ `TodoList.name`. `name: self.fields.name` keeps that relationship explicit:
+> its constraints and meaning evolve together. Ontahí's bias is to bring links like this out of the
+> architecture's unconscious and into the model.
+
 ## Use them from Node
 
 ```ts
