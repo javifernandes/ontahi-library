@@ -22,7 +22,7 @@ that model is interpreted.
 
 5. [Create, Rename, Delete](02-changing-state/01-create-rename-delete.md)
 6. [Selection: One Set, Many Uses](02-changing-state/02-selection-one-set-many-uses.md)
-7. Queries and Commands
+7. [Queries and Commands](02-changing-state/03-queries-and-commands.md)
 8. Durable Operations
 
 ### Part III — Carrying the Model

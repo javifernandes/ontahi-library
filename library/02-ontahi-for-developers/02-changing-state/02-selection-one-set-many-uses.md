@@ -1,7 +1,8 @@
 # Selection: One Set, Many Uses
 
-A Selection describes which entities belong to a set. Reads and operations can consume that same
-value.
+A Selection is a value that describes which entities belong to a set. It does not read storage,
+contain loaded entities, or require those entities to be present in memory. Reads and operations
+can consume that same value.
 
 ```ts
 operations: ({ self, commands, operation }) => ({
@@ -45,7 +46,7 @@ for (const todo of result.value) {
 ```
 
 `Todo.selection(...)` produces a serializable membership value. `and`, `or`, and `not` compose it
-without executing it.
+without executing it. At this point no entity has been loaded and no storage has been consulted.
 
 The same value can target the mutation:
 
@@ -114,6 +115,5 @@ await complete.executeAsync({ todos: checkedTodoIds });
 Ontahi turns those IDs into entity Refs and a reference-defined Selection. Predicate-defined and
 reference-defined sets share the same operation contract.
 
-A Selection is evaluated when its read or command runs; it is not a snapshot of the rows previously
-shown on screen. The next chapter separates the Query that shapes a read from the Command that
-changes its Selection.
+A Selection becomes active only when something interprets it. The next chapter separates the Query
+that observes its members from the Command that changes them.
