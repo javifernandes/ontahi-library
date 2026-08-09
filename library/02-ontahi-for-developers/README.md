@@ -21,7 +21,7 @@ that model is interpreted.
 ### Part II — Changing State
 
 5. [Create, Rename, Delete](02-changing-state/01-create-rename-delete.md)
-6. Selection: Naming a Set
+6. [Selection: One Set, Many Uses](02-changing-state/02-selection-one-set-many-uses.md)
 7. Queries and Commands
 8. Durable Operations
 
