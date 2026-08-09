@@ -23,23 +23,24 @@ that model is interpreted.
 5. [Create, Rename, Delete](02-changing-state/01-create-rename-delete.md)
 6. [Selection: One Set, Many Uses](02-changing-state/02-selection-one-set-many-uses.md)
 7. [Queries and Commands](02-changing-state/03-queries-and-commands.md)
-8. Durable Operations
+8. [Operation Contracts and Failures](02-changing-state/04-operation-contracts-and-failures.md)
+9. Durable Operations
 
 ### Part III — Carrying the Model
 
-9. Capabilities and Runtime Composition
-10. Storage
-11. Transport
+10. Capabilities and Runtime Composition
+11. Storage
+12. Transport
 
 ### Part IV — Projecting the Application
 
-12. React Runtime: Cache and Invalidation
-13. Reflection and Explorer
-14. The Host Boundary
+13. React Runtime: Cache and Invalidation
+14. Reflection and Explorer
+15. The Host Boundary
 
-The sequence is provisional until the canonical-surface inventory has been exercised through the
-first three chapters. The distinctions are not provisional: Application, Entity, Ref, Relation,
-Selection, Query, Command, Domain Operation, Capability, and Runtime each carry a different job.
+The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
+Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability, and
+Runtime each carry a different job.
 
 ## Writing posture
 
@@ -47,6 +48,10 @@ Lead with executable form. Use the application first from ordinary Node code. In
 projection only when the browser boundary creates pressure for it. Explain an abstraction when the
 code creates pressure for its name. Prefer one complete example over a catalog of disconnected
 features.
+
+Keep the main narrative in Ontahí's own vocabulary. A short margin note may contrast a familiar
+transport or framework pattern when that contrast makes the pressure behind an Ontahí abstraction
+concrete; it must not turn into a second tutorial.
 
 React support stays transparent on the main path. Cache behavior and invalidation mechanics belong
 to the advanced projection section. The main path uses only canonical APIs; transitional APIs do

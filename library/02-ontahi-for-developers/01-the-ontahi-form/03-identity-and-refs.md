@@ -159,3 +159,8 @@ the criterion remains a lazy description until the operation runs.
 The implementation of `complete` is identical in all three cases. Ontahí normalizes each target to
 the operation's semantic input and delegates its interpretation to the runtime. The same input
 forms work when calling `Todo.complete(...)` directly from Node or through the generated client.
+
+> [!MARGIN] **Beyond `completeById`.** A transport API often grows `completeById`,
+> `completeSelected`, and `completeOlderThan`, or introduces a custom filter input and its
+> interpreter. Ontahí carries GraphQL's declarative instinct into operation targets: one domain
+> operation accepts a Ref or Selection, while each caller chooses how to describe membership.
