@@ -47,7 +47,7 @@ This is the shortest complete account of the current framework.
 | Ref | Canonical | Entity locators and their ref factories | core ref tests, client and server input lowering, Todo explicit refs | Identifies one entity; an operation boundary may promote it to a singleton Selection. |
 | Relation | Canonical, bounded | Declare with `relation.belongsTo(...)` / `hasMany(...)`; read with `commands.relatedTo(...)` | Todo `listForList`, relation-root runtime tests, BookOps cyclic refs | Declares topology, navigation, and storage evidence; not yet a complete behavior owner. |
 | Selection | Canonical | `Entity.selection(predicate)`; `Selection.all`, `none`, `references`; Boolean composition | Todo Node/React filters, core algebra tests, and all graph runtimes | A serializable description of membership, shared by UI filters, reads, and operation targets. |
-| Operation input selection | Canonical | `graphSchema.selection(entity, { cardinality })`; pass a Ref directly for one known member | Todo operations, reflection, input normalization, and Explorer tests | Public inputs erase singleton conversion boilerplate; the runner receives a Selection. |
+| Operation input selection | Canonical | `graphSchema.selection(entity, { cardinality })`; pass a Selection, Ref, identity scalar, identity-bearing record, or—when targeting many—an array of those values | Todo operations, reflection, input normalization, and Explorer tests | Public inputs preserve caller ergonomics; the runner receives a Selection and materialized records cross the boundary only by identity. |
 | Query | Canonical | `commands.where(...)` or `commands.relatedTo(...)`, then shape with `select`, `include`, `orderBy`, and `limit` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection or declared relation. |
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
 | Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
@@ -128,9 +128,11 @@ Import entities from the application composition module and call their operation
 `TodoList.list()` and `TodoList.rename({ list, name })`. The lower-level application invocation API
 remains runtime machinery, not the main authoring form.
 
-When an operation expects a Selection and the caller already has one Entity Ref, the public input
-accepts that Ref and the runner normalizes it to a singleton Selection. This removes ceremony
-without erasing the semantic distinction.
+When an operation expects a Selection, its public input accepts an existing Selection, an Entity
+Ref, an identity scalar, or an identity-bearing materialized record. Many-member inputs accept
+arrays of those values. Bound Node entities and generated clients share this normalization: the
+runner receives a Selection, and materialized records cross the boundary only by identity. This
+removes ceremony without erasing the semantic distinction.
 
 Predicate membership is authored as `Entity.selection(predicate)` from a bound Node entity or its
 generated browser projection. The resulting value is the same Selection AST whether it drives a

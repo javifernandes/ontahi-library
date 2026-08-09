@@ -157,4 +157,5 @@ UI.” The third means “complete every Todo in the research list.” No prelim
 the criterion remains a lazy description until the operation runs.
 
 The implementation of `complete` is identical in all three cases. Ontahí normalizes each target to
-the operation's semantic input and delegates its interpretation to the runtime.
+the operation's semantic input and delegates its interpretation to the runtime. The same input
+forms work when calling `Todo.complete(...)` directly from Node or through the generated client.
