@@ -7,5 +7,7 @@ Each numbered directory is a book, not a documentation section. A book may conta
 Current books:
 
 - [01-living-systems](01-living-systems/)
+- [02-ontahi-for-developers](02-ontahi-for-developers/)
 
-Future books may include a developer guide, a runtime specification, RFCs, and a visual or writing style guide. They should appear when the work asks for them, not before.
+Future books may include a runtime specification, RFCs, and a visual or writing style guide. They
+should appear when the work asks for them, not before.

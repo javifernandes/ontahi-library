@@ -12,13 +12,15 @@ Ontahí needs both. This repository begins with the second.
 
 ## The First Shelf
 
-The library starts with one book:
+The library starts with two books:
 
 - [Living Systems](library/01-living-systems/)
+- [Ontahí for Developers](library/02-ontahi-for-developers/)
 
 The name is intentional. The first book should not begin by explaining Ontahí. It should begin by explaining systems: how they change, how they preserve identity, how complexity accumulates, and why architecture exists to manage the cost of change.
 
-Ontahí should appear later, as a natural consequence.
+Ontahí appears there as a natural consequence. The developer book begins from the other side: the
+system already exists, and the task is to use its language precisely.
 
 ## Repository Principles
 
