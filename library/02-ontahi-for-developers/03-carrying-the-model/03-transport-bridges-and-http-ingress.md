@@ -88,7 +88,7 @@ Queries and Commands in a browser runtime backed by Supabase, while domain opera
 semantic intentions to the server:
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph Client["React client"]
     direction TB
     DirectHook["Graph hook"]

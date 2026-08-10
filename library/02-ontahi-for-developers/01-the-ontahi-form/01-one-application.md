@@ -47,7 +47,7 @@ the runtime rediscover the domain from a second configuration.
 One semantic application can be interpreted across several processes:
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph Client["Client"]
     ClientApp["React UI<br/>Entities + hooks"]
   end
