@@ -89,30 +89,31 @@ semantic intentions to the server:
 
 ```mermaid
 flowchart TB
-  subgraph Client["React client"]
+  subgraph Client["React client runtime"]
     direction TB
-    DirectHook["Graph hook"]
-    OperationHook["Operation hook"]
+    subgraph Direct["Browser-direct Data Graph"]
+      direction TB
+      DirectHook["Graph hook"] --> Plan["Selection + Query / Command"]
+      Plan --> BrowserRuntime["Supabase browser runtime"]
+    end
+
+    subgraph BridgedClient["Bridged domain operation"]
+      direction TB
+      OperationHook["Operation hook"] --> Intention["Operation id + semantic input"]
+      Intention --> Bridge["Fetch bridge"]
+    end
   end
 
-  subgraph Direct["Browser-direct Data Graph"]
+  subgraph Server["Application server runtime"]
     direction TB
-    Plan["Selection + Query / Command"] --> BrowserRuntime["Supabase browser runtime"]
-  end
-
-  subgraph Bridged["Bridged domain operation"]
-    direction TB
-    Intention["Operation id + semantic input"]
-    Intention --> Bridge["Fetch / Next / Express bridge"]
-    Bridge --> ServerApp["Server Ontahí application"]
+    ServerApp["Server Ontahí application"]
     ServerApp --> DomainOperation["Domain operation"]
     DomainOperation --> ServerRuntime["Server Data Graph runtime"]
   end
 
   Database["Application database"]
-  DirectHook --> Plan
   BrowserRuntime -->|"PostgREST + RLS"| Database
-  OperationHook --> Intention
+  Bridge -->|"semantic invocation"| ServerApp
   ServerRuntime -->|"Queries / Commands"| Database
   Database ~~~ DatabaseMargin[" "]
 
