@@ -25,15 +25,14 @@ export const TodoList = entity({
       },
     }),
   },
-  operations: ({ self, commands, operation }) => ({
+  operations: ({ self, operation }) => ({
     rename: operation({
       input: O.object({
         list: self.one(),
         name: self.fields.name,
       }),
       output: self,
-      run: ({ list, name }) =>
-        commands.where(list).updateOneReturning({ name }, ['id', 'name']),
+      run: ({ list, name }) => list.updateReturning({ name }, ['id', 'name']),
     }),
   }),
 });

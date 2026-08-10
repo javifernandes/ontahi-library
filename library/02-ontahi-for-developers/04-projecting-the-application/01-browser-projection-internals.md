@@ -143,7 +143,7 @@ list: operation({
   input: self.many(),
   output: self.array(),
   bridge: { query: [(todos: unknown) => todos] },
-  run: todos => commands.where(todos),
+  run: todos => todos.orderBy(todo => todo.title),
 }),
 
 complete: operation({

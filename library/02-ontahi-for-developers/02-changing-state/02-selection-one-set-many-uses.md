@@ -5,12 +5,12 @@ contain loaded entities, or require those entities to be present in memory. Read
 can consume that same value.
 
 ```ts
-operations: ({ self, commands, operation }) => ({
+operations: ({ self, operation }) => ({
   list: operation({
     input: self.many(),
     output: self.array(),
     bridge: { query: [(todos: unknown) => todos] },
-    run: todos => commands.where(todos).orderBy(todo => todo.title),
+    run: todos => todos.orderBy(todo => todo.title),
   }),
 
   complete: operation({

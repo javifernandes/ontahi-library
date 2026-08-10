@@ -38,8 +38,7 @@ rename: operation({
     name: field.nonEmptyString({ trim: true }),
   }),
   output: self,
-  run: ({ list, name }) =>
-    commands.where(list).updateOneReturning({ name }, ['id', 'name']),
+  run: ({ list, name }) => list.updateReturning({ name }, ['id', 'name']),
 }),
 ```
 
@@ -76,12 +75,12 @@ export const TodoTag = entity({
     refByTodoAndTag: ['todoId', 'tagId'],
   },
   identity: 'refByTodoAndTag',
-  operations: ({ self, commands, operation }) => ({
+  operations: ({ self, operation }) => ({
     remove: operation({
       input: O.object({
         assignment: self.one(),
       }),
-      run: ({ assignment }) => commands.where(assignment).deleteOne(),
+      run: ({ assignment }) => assignment.delete(),
     }),
   }),
 });

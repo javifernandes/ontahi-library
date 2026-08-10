@@ -16,21 +16,22 @@ operations: ({ self, commands, operation }) => ({
       name: self.fields.name,
     }),
     output: self,
-    run: ({ list, name }) =>
-      commands.where(list).updateOneReturning({ name }, ['id', 'name']),
+    run: ({ list, name }) => list.updateReturning({ name }, ['id', 'name']),
   }),
 
   delete: operation({
     input: O.object({
       list: self.one(),
     }),
-    run: ({ list }) => commands.where(list).deleteOne(),
+    run: ({ list }) => list.delete(),
   }),
 }),
 ```
 
-The input schema is the public contract. The command is the storage-neutral effect. `create`,
-`rename`, and `delete` are domain vocabulary available to every host.
+The input schema is the public contract. The command is the storage-neutral effect. Because
+`list` is declared as `self.one()`, its fluent mutations already carry exact-one cardinality;
+there is no `updateOne` or `deleteOne` ceremony to repeat. `create`, `rename`, and `delete` are
+domain vocabulary available to every host.
 
 > [!MARGIN] **The semantic identity of `name`.** A transport API often redeclares `name` in
 > its request DTO. Even when both declarations validate the same values today, that loses the fact

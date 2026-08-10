@@ -15,16 +15,13 @@ The `list` operation turns its input Selection into a Query:
 list: operation({
   input: self.many(),
   output: self.array(),
-  run: todos =>
-    commands
-      .where(todos)
-      .orderBy(todo => todo.title)
-      .limit(100),
+  run: todos => todos.orderBy(todo => todo.title).limit(100),
 }),
 ```
 
-`todos` carries membership. `where`, `orderBy`, and `limit` build the read. Returning that Query
-lets the configured runtime interpret it and produce the operation result.
+`todos` carries membership. Calling `orderBy` promotes that portable value into a Query while
+preserving its members; `limit` shapes the resulting read. Returning the Query lets the configured
+runtime interpret it and produce the operation result.
 
 The Selection itself remains unchanged. Another Query may reuse it with a different order, limit,
 or projection.
@@ -38,12 +35,16 @@ complete: operation({
   input: O.object({
     todos: self.many(),
   }),
-  run: ({ todos }) => commands.where(todos).update({ completed: true }),
+  run: ({ todos }) => todos.update({ completed: true }),
 }),
 ```
 
 The Command does not need the result of `list`. It receives the Selection directly and updates the
 entities that belong to it when the Command runs.
+
+`commands.where(todos)` remains available as the lower-level form when a complex operation must
+bind the Selection to the runtime, execute an intermediate read, and continue with more work. A
+single returned Query or Command should normally start from the input itself.
 
 ## One value, two executions
 
