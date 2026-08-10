@@ -13,8 +13,8 @@ The `list` operation turns its input Selection into a Query:
 
 ```ts
 list: operation({
-  input: O.selection(self, { cardinality: 'many' }),
-  output: O.array(self),
+  input: self.many(),
+  output: self.array(),
   run: todos =>
     commands
       .where(todos)
@@ -36,7 +36,7 @@ The `complete` operation interprets the same kind of value as the target of a Co
 ```ts
 complete: operation({
   input: O.object({
-    todos: O.selection(self, { cardinality: 'many' }),
+    todos: self.many(),
   }),
   run: ({ todos }) => commands.where(todos).update({ completed: true }),
 }),

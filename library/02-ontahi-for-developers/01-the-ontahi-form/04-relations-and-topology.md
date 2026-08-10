@@ -37,9 +37,9 @@ uses: {
 operations: ({ self, commands, operation, entities }) => ({
   listForList: operation({
     input: O.object({
-      list: O.selection(TodoList, { cardinality: 'one' }),
+      list: TodoList.one(),
     }),
-    output: O.array(self),
+    output: self.array(),
     exposure: 'bridge',
     bridge: { query: [(input: unknown) => input] },
     run: ({ list }) =>

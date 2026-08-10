@@ -7,15 +7,15 @@ can consume that same value.
 ```ts
 operations: ({ self, commands, operation }) => ({
   list: operation({
-    input: O.selection(self, { cardinality: 'many' }),
-    output: O.array(self),
+    input: self.many(),
+    output: self.array(),
     bridge: { query: [(todos: unknown) => todos] },
     run: todos => commands.where(todos).orderBy(todo => todo.title),
   }),
 
   complete: operation({
     input: O.object({
-      todos: O.selection(self, { cardinality: 'many' }),
+      todos: self.many(),
     }),
     bridge: { invalidate: [['Todo']] },
     run: ({ todos }) => todos.update({ completed: true }),

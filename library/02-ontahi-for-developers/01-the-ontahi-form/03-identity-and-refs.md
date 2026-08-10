@@ -29,12 +29,12 @@ meaning to refer to it.
 
 ## Act on the Ref
 
-An operation that accepts one TodoList declares that target as a Selection:
+An operation that accepts one TodoList declares that cardinality through the Entity itself:
 
 ```ts
 rename: operation({
   input: O.object({
-    list: O.selection(self, { cardinality: 'one' }),
+    list: self.one(),
     name: field.nonEmptyString({ trim: true }),
   }),
   output: self,
@@ -79,7 +79,7 @@ export const TodoTag = entity({
   operations: ({ self, commands, operation }) => ({
     remove: operation({
       input: O.object({
-        assignment: O.selection(self, { cardinality: 'one' }),
+        assignment: self.one(),
       }),
       run: ({ assignment }) => commands.where(assignment).deleteOne(),
     }),

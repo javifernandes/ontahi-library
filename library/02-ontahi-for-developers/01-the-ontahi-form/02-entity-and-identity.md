@@ -1,11 +1,8 @@
 # An Entity at Work
 
-An Entity declares a named kind of thing and the operations that belong to it. The book imports
-`graphSchema` as `O` to keep schema expressions compact.
+An Entity declares a named kind of thing and the operations that belong to it.
 
 ```ts
-import { graphSchema as O } from '@ontahi/core/data-graph';
-
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
@@ -16,12 +13,16 @@ export const TodoList = entity({
   identity: 'refById',
   operations: ({ self, commands, operation }) => ({
     list: operation({
-      output: O.array(self),
+      output: self.array(),
       run: () => commands.all().orderBy(list => list.name),
     }),
   }),
 });
 ```
+
+Entity-shaped contracts stay on the Entity: `self` for one materialized value, `self.array()` for
+many, and—as the next chapters show—`self.one()` or `self.many()` for semantic targets. Later
+examples import `graphSchema` as `O` only for standalone schema composition.
 
 Fields describe its values. Locators and identity will matter in the next chapter. For now, the
 important addition is `list`: a typed operation whose implementation is a graph query.
@@ -49,16 +50,18 @@ through the application runtime selected at composition.
 ## Project the same operation to React
 
 Operations are server-only by default. To make `list` available to a generated browser client, opt
-that operation into the bridge and give repeated reads one identity:
+that operation into the bridge:
 
 ```ts
 list: operation({
   exposure: 'bridge',
-  output: O.array(self),
-  bridge: { query: [() => 'all'] },
+  output: self.array(),
   run: () => commands.all().orderBy(list => list.name),
 }),
 ```
+
+Because `list` has no input, its operation identity is already a complete observation key. More
+specific query metadata is only needed when an operation's input creates distinct observations.
 
 Codegen emits the browser-safe entity. React uses that projection directly:
 

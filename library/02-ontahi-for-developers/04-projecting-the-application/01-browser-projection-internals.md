@@ -140,15 +140,15 @@ Mutation hooks use the same metadata. Consider the two declarations already used
 
 ```ts
 list: operation({
-  input: O.selection(self, { cardinality: 'many' }),
-  output: O.array(self),
+  input: self.many(),
+  output: self.array(),
   bridge: { query: [(todos: unknown) => todos] },
   run: todos => commands.where(todos),
 }),
 
 complete: operation({
   input: O.object({
-    todos: O.selection(self, { cardinality: 'many' }),
+    todos: self.many(),
   }),
   bridge: { invalidate: [['Todo']] },
   run: ({ todos }) => todos.update({ completed: true }),

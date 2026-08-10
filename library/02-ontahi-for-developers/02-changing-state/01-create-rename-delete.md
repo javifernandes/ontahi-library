@@ -12,7 +12,7 @@ operations: ({ self, commands, operation }) => ({
 
   rename: operation({
     input: O.object({
-      list: O.selection(self, { cardinality: 'one' }),
+      list: self.one(),
       name: self.fields.name,
     }),
     output: self,
@@ -22,7 +22,7 @@ operations: ({ self, commands, operation }) => ({
 
   delete: operation({
     input: O.object({
-      list: O.selection(self, { cardinality: 'one' }),
+      list: self.one(),
     }),
     run: ({ list }) => commands.where(list).deleteOne(),
   }),

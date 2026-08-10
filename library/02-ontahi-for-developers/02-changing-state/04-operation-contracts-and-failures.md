@@ -28,7 +28,7 @@ export const TodoList = entity({
   operations: ({ self, commands, operation }) => ({
     rename: operation({
       input: O.object({
-        list: O.selection(self, { cardinality: 'one' }),
+        list: self.one(),
         name: self.fields.name,
       }),
       output: self,
@@ -181,7 +181,7 @@ performed, so a postcondition is an assertion—not a transaction or rollback po
 rename: operation({
   requires: [todoListWritesEnabled],
   input: O.object({
-    list: O.selection(self, { cardinality: 'one' }),
+    list: self.one(),
     name: self.fields.name,
   }),
   // ...
