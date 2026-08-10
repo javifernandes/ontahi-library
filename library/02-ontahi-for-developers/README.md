@@ -40,6 +40,13 @@ that model is interpreted.
 ### Part V — Further Directions
 
 15. [Further Directions](05-further-directions/01-further-directions.md)
+16. [Model-Backed Operations](05-further-directions/02-model-backed-operations.md)
+17. [Selection as an Editable Language](05-further-directions/03-selection-as-an-editable-language.md)
+18. [Continuous Execution and First-Class Events](05-further-directions/04-continuous-execution-and-first-class-events.md)
+19. [Semantic Operational Policy](05-further-directions/05-semantic-operational-policy.md)
+20. [A Topology of Graphs](05-further-directions/06-a-topology-of-graphs.md)
+21. [More Adapters, Same Contracts](05-further-directions/07-more-adapters-same-contracts.md)
+22. [Living Entities](05-further-directions/08-living-entities.md)
 
 The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
 Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability,
