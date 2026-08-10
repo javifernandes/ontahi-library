@@ -127,7 +127,7 @@ It is a way of keeping the system capable of learning.
 
 Irreversible changes are sometimes necessary.
 
-But they should be treated with ceremony. They alter the future shape of the system. They reduce the number of possible worlds the architecture can still inhabit.
+But they should be evaluated at the scale of the system, not the scale of the edit. They alter the future shape of the system. They reduce the number of possible worlds the architecture can still inhabit.
 
 Good architecture does not make everything reversible.
 
