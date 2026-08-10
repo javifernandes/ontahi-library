@@ -7,29 +7,49 @@ features to add to a framework; they ask what else can interpret the same semant
 The surfaces below are directions, not promises made by the current packages. Some have working
 pieces. Others still need a durable contract before they deserve an API.
 
-## Two concrete next moves
+## Concrete semantic directions
 
 Two lines are concrete enough to shape now:
 
-- [**Model-Backed Operations**](02-model-backed-operations.md) keeps one typed operation while the
+- [**AI Operations**](02-ai-operations.md) keeps one typed operation while the
   runtime may execute it through code, a model, an external system, or a composition.
 - [**Selection as an Editable Language**](03-selection-as-an-editable-language.md) treats filters,
   expressions, structural editors, and code as projections of the same Selection AST.
+
+## From reflection to interaction
+
+Two more directions form a dependency rather than a feature list:
+
+- [**Runtime Data Reflection**](04-runtime-data-reflection.md) describes what a runtime can
+  truthfully know and do with the live population behind an Entity or Selection.
+- [**Alive UI**](05-alive-ui.md) consumes semantic reflection plus that runtime profile to choose
+  viable headless interaction patterns and, optionally, visual components.
 
 ## Wider system directions
 
 The same base opens several system-level lines:
 
-- [**Continuous Execution and First-Class Events**](04-continuous-execution-and-first-class-events.md)
+- [**Continuous Execution and First-Class Events**](06-continuous-execution-and-first-class-events.md)
   separates observation streams, operation invocations, and facts that happened.
-- [**Semantic Operational Policy**](05-semantic-operational-policy.md) makes authorization,
+- [**Semantic Operational Policy**](07-semantic-operational-policy.md) makes authorization,
   rollout, limits, retries, telemetry, and budgets inspectable parts of execution.
-- [**A Topology of Graphs**](06-a-topology-of-graphs.md) carries Entities, Refs, Selections, and
+- [**A Topology of Graphs**](08-a-topology-of-graphs.md) carries Entities, Refs, Selections, and
   operations across explicit runtime and storage segments.
-- [**More Adapters, Same Contracts**](07-more-adapters-same-contracts.md) uses new storage,
+- [**More Adapters, Same Contracts**](09-more-adapters-same-contracts.md) uses new storage,
   transport, task, and UI technologies to test the portability of the contracts.
-- [**Living Entities**](08-living-entities.md) is the farther horizon: safely evolving the model
+- [**Living Entities**](10-living-entities.md) is the farther horizon: safely evolving the model
   itself at runtime.
+
+```mermaid
+flowchart TB
+  Base["Current semantic application"] --> AI["AI Operations"]
+  Base --> Selection["Selection language"]
+  Base --> DataReflection["Runtime Data Reflection"]
+  Selection --> Alive["Alive UI"]
+  DataReflection --> Alive
+  Base --> SystemDirections["Events · policy · topology · adapters"]
+  SystemDirections --> Living["Living Entities"]
+```
 
 ## What the base makes possible
 

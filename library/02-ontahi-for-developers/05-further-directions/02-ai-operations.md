@@ -1,14 +1,14 @@
-# Model-Backed Operations
+# AI Operations
 
 An operation has an identity, typed input and output, authority, contracts, Capabilities, and
 effects. None of that requires its implementation to remain an ordinary function forever.
 
-A model-backed runtime could execute the same operation contract through an LLM. The caller would
-still invoke an Ontahí operation and receive its canonical result. Runtime composition—not the
-caller—would choose code, a model, an external system, or a composition.
+`AI Operations` is the visible direction. Its precise runtime mechanism is model-backed operation
+execution: the caller still invokes one Ontahí operation and receives its canonical result, while
+runtime composition chooses code, a model, an external system, or a composition.
 
-This makes model execution part of the application language, not an AI layer attached above it.
-The operation remains the semantic message. Its transport and current executor are replaceable.
+This makes AI part of the application language, not a layer attached above it. The operation
+remains the semantic message. Its transport and current executor are replaceable.
 
 ## Two places for a model
 
@@ -27,10 +27,24 @@ flowchart TB
   Lifecycle --> Outcome["Typed result + events + trace"]
 ```
 
-An operation could begin as a soft semantic contract, gain stable model instructions and allowed
-sources, and later harden through evaluations or deterministic code without changing its public
-identity. Durability is a separate axis: code and model executors may each run immediately or as
-durable work; an operation does not become durable merely because it became more mature.
+## A path from fuzzy to petrified
+
+An application can start from its Entities, operations, and use cases without waiting for every
+implementation to be fully coded. A soft operation can use a model first, gain stable instructions
+and evaluations, become hybrid, and eventually be petrified into cheaper and more deterministic
+code where the domain has matured.
+
+```mermaid
+flowchart LR
+  Contract["Stable operation contract"] --> Soft["Soft · model-backed"]
+  Soft --> Prompted["Prompt-backed"]
+  Prompted --> Evaluated["Evaluated / hybrid"]
+  Evaluated --> Coded["Code-backed / hardened"]
+```
+
+The public operation need not change along that path. Nor is code always the destination: fuzzy
+judgement may remain the honest implementation for some capabilities. Durability is a separate
+axis; code and model executors may each run immediately or as durable work.
 
 ## Working state without hidden state
 
