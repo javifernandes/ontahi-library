@@ -11,7 +11,7 @@ Creation begins at the Entity root:
 ```ts
 const research = TodoList.refById('list-research');
 
-const createTodo = Todo.insert({
+const createTodo = TodoItem.insert({
   id: 'todo-42',
   list: research,
   title: 'Read the runtime notes',
@@ -22,7 +22,7 @@ const createTodo = Todo.insert({
 Ask for the fields needed by the next step without materializing an unspecified record shape:
 
 ```ts
-const createAndReturnIdentity = Todo.insertReturning(
+const createAndReturnIdentity = TodoItem.insertReturning(
   {
     id: 'todo-42',
     list: research,
@@ -40,7 +40,7 @@ The result type is exactly `{ id: string; title: string }`.
 The plural form keeps one Command and one declared result shape:
 
 ```ts
-const importTodos = Todo.insertManyReturning(
+const importTodos = TodoItem.insertManyReturning(
   [
     { id: 'todo-43', list: research, title: 'Map the query API', completed: false },
     { id: 'todo-44', list: research, title: 'Map the command API', completed: false },
@@ -55,7 +55,7 @@ record or an array with the same cardinality as the insertion.
 ## Upsert with an explicit conflict rule
 
 ```ts
-const synchronizeTodo = Todo.upsert(
+const synchronizeTodo = TodoItem.upsert(
   {
     id: external.id,
     list: TodoList.refById(external.listId),
@@ -74,7 +74,7 @@ plural `upsertMany` form applies the same declared rule to a payload array.
 A Selection already carries the target set:
 
 ```ts
-const overdue = Todo.selection(todo =>
+const overdue = TodoItem.selection(todo =>
   todo.dueAt.lt('2026-08-01T00:00:00Z'),
 );
 
@@ -96,11 +96,11 @@ turn them into a list of ids.
 ## Delete a Selection
 
 ```ts
-const removeArchived = Todo
+const removeArchived = TodoItem
   .selection(todo => todo.archived.eq(true))
   .delete();
 
-const removeAndReturnIds = Todo
+const removeAndReturnIds = TodoItem
   .selection(todo => todo.archived.eq(true))
   .deleteReturning(['id']);
 ```
@@ -123,7 +123,7 @@ rename: operation({
 }),
 ```
 
-`todo.updateReturning(...)` returns one projected Todo because `todo` already means exactly one.
+`todo.updateReturning(...)` returns one projected TodoItem because `todo` already means exactly one.
 A `self.many()` input produces an array from the same method. Lower-level `updateOne`,
 `updateMany`, `deleteOne`, and `deleteMany` variants remain available when code must assert
 cardinality without a semantic input carrying it.

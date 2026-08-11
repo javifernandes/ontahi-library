@@ -6,7 +6,7 @@ An Ontahí application begins by declaring what exists and choosing the runtimes
 export const TodoApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
   tasks: inProcessTasks(),
-  entities: [TodoList, Tag, TodoTag, Todo],
+  entities: [TodoList, Tag, TodoTag, TodoItem],
 });
 ```
 

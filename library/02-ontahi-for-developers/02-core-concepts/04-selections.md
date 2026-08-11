@@ -9,13 +9,13 @@ when a Query, Command, or Operation consumes it.
 Start a Selection from the Entity:
 
 ```ts
-const open = Todo.selection(todo => todo.completed.eq(false));
-const inResearch = Todo.selection(todo =>
+const open = TodoItem.selection(todo => todo.completed.eq(false));
+const inResearch = TodoItem.selection(todo =>
   todo.list.eq(TodoList.refById('list-research')),
 );
-const urgent = Todo.selection(todo => todo.priority.in(['high', 'critical']));
-const unassigned = Todo.selection(todo => todo.assigneeId.isNull());
-const stale = Todo.selection(todo => todo.createdAt.lt('2026-07-01T00:00:00Z'));
+const urgent = TodoItem.selection(todo => todo.priority.in(['high', 'critical']));
+const unassigned = TodoItem.selection(todo => todo.assigneeId.isNull());
+const stale = TodoItem.selection(todo => todo.createdAt.lt('2026-07-01T00:00:00Z'));
 ```
 
 Field references expose the predicates supported by the Selection language:
@@ -37,7 +37,7 @@ Selections form a small algebra through `and`, `or`, and `not`:
 ```ts
 const visible = open.and(inResearch);
 const needsAttention = urgent.or(stale);
-const active = Todo
+const active = TodoItem
   .selection(todo => todo.archived.eq(true))
   .not();
 
@@ -68,9 +68,9 @@ An operation input declared as `self.many()` accepts a predicate-defined Selecti
 identities, or materialized records:
 
 ```ts
-await Todo.complete({ todos: triageQueue });
-await Todo.complete({ todos: ['todo-23', 'todo-42'] });
-await Todo.complete({ todos: checkedTodoRecords });
+await TodoItem.complete({ todos: triageQueue });
+await TodoItem.complete({ todos: ['todo-23', 'todo-42'] });
+await TodoItem.complete({ todos: checkedTodoRecords });
 ```
 
 Ontahí normalizes each form into the same semantic target. The operation does not need
@@ -101,7 +101,7 @@ A filter model can construct the Selection used by both a read and an operation:
 
 ```tsx
 const visibleTodos = useMemo(() => {
-  const inList = Todo.selection(todo =>
+  const inList = TodoItem.selection(todo =>
     todo.list.eq(TodoList.refById(listId)),
   );
   return status === 'all'
@@ -109,8 +109,8 @@ const visibleTodos = useMemo(() => {
     : inList.and(todo => todo.completed.eq(status === 'completed'));
 }, [listId, status]);
 
-const todos = useOperationQuery(Todo.domain.list, visibleTodos);
-const complete = useOperation(Todo.domain.complete);
+const todos = useOperationQuery(TodoItem.domain.list, visibleTodos);
+const complete = useOperation(TodoItem.domain.complete);
 
 await complete.executeAsync({ todos: visibleTodos });
 ```

@@ -11,13 +11,13 @@ The common declaration places identity at the field itself:
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
-    id: field.id(),
-    name: field.nonEmptyString({ trim: true }),
+    id: f.id(),
+    name: f.nonEmptyString({ trim: true }),
   },
 });
 ```
 
-An exact, required `id: field.id()` gives TodoList a `refById` locator and makes it the
+An exact, required `id: f.id()` gives TodoList a `refById` locator and makes it the
 default identity. The Entity can be addressed immediately:
 
 ```ts
@@ -25,7 +25,7 @@ const listA = TodoList.refById('A');
 ```
 
 The convention is deliberately narrow. A scalar field such as `legacyOwnerId` remains an ordinary
-id value unless it is declared as `field.ref(Owner)`, and an optional or nullable `id` does not
+id value unless it is declared as `f.ref(Owner)`, and an optional or nullable `id` does not
 silently become the Entity identity.
 
 ## Alternate locators
@@ -36,9 +36,9 @@ A domain may expose more than one stable way to locate the same Entity:
 export const Book = entity({
   name: 'Book',
   fields: {
-    id: field.id(),
-    slug: field.slug(),
-    title: field.nonEmptyString({ trim: true }),
+    id: f.id(),
+    slug: f.slug(),
+    title: f.nonEmptyString({ trim: true }),
   },
   locators: {
     refBySlug: 'slug',
@@ -94,7 +94,7 @@ An operation that accepts one TodoList declares that cardinality through the Ent
 rename: operation({
   input: O.object({
     list: self.one(),
-    name: field.nonEmptyString({ trim: true }),
+    name: f.nonEmptyString({ trim: true }),
   }),
   output: self,
   run: ({ list, name }) => list.updateReturning({ name }, ['id', 'name']),
@@ -136,8 +136,8 @@ Some identities need more than one field:
 export const TodoTag = entity({
   name: 'TodoTag',
   fields: {
-    todoId: field.id(),
-    tagId: field.id(),
+    todoId: f.id(),
+    tagId: f.id(),
   },
   locators: {
     refByTodoAndTag: ['todoId', 'tagId'],
@@ -204,7 +204,7 @@ The same `complete` operation can receive identities typed by hand, records sele
 a criterion that has not been evaluated yet:
 
 ```tsx
-const complete = useOperation(Todo.domain.complete);
+const complete = useOperation(TodoItem.domain.complete);
 
 await complete.executeAsync({
   todos: ['23'],
@@ -215,19 +215,19 @@ await complete.executeAsync({
 });
 
 await complete.executeAsync({
-  todos: Todo.selection(todo =>
+  todos: TodoItem.selection(todo =>
     todo.list.eq(TodoList.refById('list-research')),
   ),
 });
 ```
 
-The first call means “complete Todo 23.” The second means “complete these Todos selected in the
-UI.” The third means “complete every Todo in the research list.” No preliminary read is required:
+The first call means “complete todo item 23.” The second means “complete these todo items selected
+in the UI.” The third means “complete every todo item in the research list.” No preliminary read is required:
 the criterion remains a lazy description until the operation runs.
 
 The implementation of `complete` is identical in all three cases. Ontahí normalizes each target to
 the operation's semantic input and delegates its interpretation to the runtime. The same input
-forms work when calling `Todo.complete(...)` directly from Node or through the generated client.
+forms work when calling `TodoItem.complete(...)` directly from Node or through the generated client.
 
 > [!MARGIN] **Beyond `completeById`.** A transport API often grows `completeById`,
 > `completeSelected`, and `completeOlderThan`, or introduces a custom filter input and its

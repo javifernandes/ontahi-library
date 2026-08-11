@@ -3,11 +3,14 @@
 An \concept{Entity} declares a named kind of thing and the operations that belong to it.
 
 ```ts
+import { field as f } from '@ontahi/core/data-graph';
+import { entity } from '@ontahi/core/entity';
+
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
-    id: field.id(),
-    name: field.nonEmptyString({ trim: true }),
+    id: f.id(),
+    name: f.nonEmptyString({ trim: true }),
   },
   operations: ({ self, commands, operation }) => ({
     list: operation({
@@ -17,6 +20,9 @@ export const TodoList = entity({
   }),
 });
 ```
+
+This guide imports the Field factory as `f`. The short alias keeps Entity declarations compact;
+the model still reflects each value as a Field.
 
 Entity-shaped contracts stay on the Entity: `self` for one materialized value, `self.array()` for
 many, and—as the next chapters show—`self.one()` or `self.many()` for semantic targets. Later

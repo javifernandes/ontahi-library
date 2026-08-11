@@ -38,10 +38,10 @@ generated module carries enough meaning for code such as this to remain typed an
 browser:
 
 ```ts
-Todo.refById('todo-write-outline');
-Todo.selection(todo => todo.completed.eq(false));
-Todo.domain.list.input;
-Todo.domain.complete.output;
+TodoItem.refById('todo-write-outline');
+TodoItem.selection(todo => todo.completed.eq(false));
+TodoItem.domain.list.input;
+TodoItem.domain.complete.output;
 ```
 
 The generated file is deterministic and checked for drift; application code imports it but does
@@ -81,12 +81,12 @@ The UI can author the same membership value used from Node:
 
 ```tsx
 const openTodos = useMemo(
-  () => Todo.selection(todo => todo.completed.eq(false)),
+  () => TodoItem.selection(todo => todo.completed.eq(false)),
   [],
 );
 
-const todos = useOperationQuery(Todo.domain.list, openTodos);
-const complete = useOperation(Todo.domain.complete);
+const todos = useOperationQuery(TodoItem.domain.list, openTodos);
+const complete = useOperation(TodoItem.domain.complete);
 ```
 
 `useOperationQuery` does three model-aware things:
@@ -95,22 +95,22 @@ const complete = useOperation(Todo.domain.complete);
 2. it derives a stable observation key from the operation and that input;
 3. it uses the operation output contract to place returned Entities in the graph cache.
 
-For `Todo.list(openTodos)`, the declared bridge metadata produces an observation shaped like:
+For `TodoItem.list(openTodos)`, the declared bridge metadata produces an observation shaped like:
 
 ```ts
-['Todo', 'list', openTodos]
+['TodoItem', 'list', openTodos]
 ```
 
-That key identifies one observed result set. It is not the identity of any Todo inside it. Another
+That key identifies one observed result set. It is not the identity of any TodoItem inside it. Another
 Selection produces another observation even when the two sets overlap.
 
 ## Cache snapshots by Entity identity
 
-Suppose two operation results contain the same Todo:
+Suppose two operation results contain the same TodoItem:
 
 ```text
-Todo.list(open)       -> [Todo A, Todo B]
-Todo.list(inResearch) -> [Todo B, Todo C]
+TodoItem.list(open)       -> [TodoItem A, TodoItem B]
+TodoItem.list(inResearch) -> [TodoItem B, TodoItem C]
 ```
 
 The client cache does not preserve four unrelated object copies. The declared output shape tells
@@ -121,7 +121,7 @@ canonical Ref and stores one current record per Entity identity:
 open       -> [Ref A, Ref B]
 inResearch -> [Ref B, Ref C]
 
-Ref B -> current Todo B snapshot
+Ref B -> current TodoItem B snapshot
 ```
 
 When React reads either observation, Ontahí resolves those Refs back into materialized values. An
@@ -137,7 +137,7 @@ cached as a result; an Entity result can participate in graph identity.
 
 ## Reconcile results, then invalidate observations
 
-Mutation hooks use the same metadata. Consider the two declarations already used by the Todo UI:
+Mutation hooks use the same metadata. Consider the two declarations already used by the TodoItem UI:
 
 ```ts
 list: operation({
@@ -151,14 +151,14 @@ complete: operation({
   input: O.object({
     todos: self.many(),
   }),
-  bridge: { invalidate: [['Todo']] },
+  bridge: { invalidate: [['TodoItem']] },
   run: ({ todos }) => todos.update({ completed: true }),
 }),
 ```
 
 After a successful operation, Ontahí first reconciles any returned Entity snapshots into the
-identity cache. It then invalidates observations declared by the operation. `['Todo']` is a prefix,
-so the current `complete` contract marks every Todo observation stale, including both lists above.
+identity cache. It then invalidates observations declared by the operation. `['TodoItem']` is a prefix,
+so the current `complete` contract marks every TodoItem observation stale, including both lists above.
 
 ```tsx
 await complete.executeAsync({ todos: openTodos });

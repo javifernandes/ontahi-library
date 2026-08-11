@@ -14,8 +14,8 @@ precondition:
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
-    id: field.id(),
-    name: field.nonEmptyString({
+    id: f.id(),
+    name: f.nonEmptyString({
       trim: true,
       exclude: {
         values: ['archive'],

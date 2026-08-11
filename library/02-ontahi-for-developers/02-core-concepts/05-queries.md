@@ -8,15 +8,15 @@ the Query adds result shape, relations, order, and bounds. Building one does not
 Start from every instance or from a predicate:
 
 ```ts
-const allTodos = Todo.all();
+const allTodos = TodoItem.all();
 
-const openTodos = Todo.where(todo => todo.completed.eq(false));
+const openTodos = TodoItem.where(todo => todo.completed.eq(false));
 ```
 
 A previously authored Selection is already a valid starting point:
 
 ```ts
-const visibleTodos = Todo
+const visibleTodos = TodoItem
   .selection(todo => todo.list.eq(TodoList.refById('list-research')))
   .and(todo => todo.completed.eq(false));
 
@@ -26,7 +26,7 @@ const query = visibleTodos.orderBy(todo => todo.title);
 `where` can continue narrowing a Query. Each call combines with the existing membership:
 
 ```ts
-const urgentOpenTodos = Todo
+const urgentOpenTodos = TodoItem
   .where(todo => todo.completed.eq(false))
   .where(todo => todo.priority.in(['high', 'critical']));
 ```
@@ -36,7 +36,7 @@ const urgentOpenTodos = Todo
 Without `select`, a Query returns the complete Entity shape. `select` declares an exact result:
 
 ```ts
-const todoSummaries = Todo
+const todoSummaries = TodoItem
   .all()
   .select(todo => ({
     id: todo.id,
@@ -48,7 +48,7 @@ const todoSummaries = Todo
 Selections may be nested into semantic groups without changing the Entity:
 
 ```ts
-const rows = Todo.all().select(todo => ({
+const rows = TodoItem.all().select(todo => ({
   identity: { id: todo.id },
   content: { title: todo.title, completed: todo.completed },
 }));
@@ -61,7 +61,7 @@ The inferred TypeScript result follows the projected shape.
 Declared Relations are available from the Query proxy:
 
 ```ts
-const todosWithList = Todo
+const todosWithList = TodoItem
   .all()
   .include(todo => ({
     list: todo.list.select(list => ({
@@ -74,7 +74,7 @@ const todosWithList = Todo
 Relation reads have their own shape operators:
 
 ```ts
-const todosWithRecentAssignments = Todo
+const todosWithRecentAssignments = TodoItem
   .all()
   .include(todo => ({
     tagAssignments: todo.tagAssignments
@@ -92,7 +92,7 @@ into the Query result.
 A bare field orders ascending. Call `asc()` or `desc()` when the direction should be explicit:
 
 ```ts
-const page = Todo
+const page = TodoItem
   .where(todo => todo.completed.eq(false))
   .orderBy(todo => todo.priority.desc())
   .orderBy(todo => todo.title.asc())
@@ -105,7 +105,7 @@ membership.
 Name a reusable read without duplicating its shape:
 
 ```ts
-const openTodoTitles = Todo
+const openTodoTitles = TodoItem
   .where(todo => todo.completed.eq(false))
   .select(todo => ({ id: todo.id, title: todo.title }))
   .orderBy(todo => todo.title)

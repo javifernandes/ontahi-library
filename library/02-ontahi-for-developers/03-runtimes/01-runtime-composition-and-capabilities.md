@@ -29,8 +29,8 @@ type TodoCapabilities = OntahiCapabilities & {
 export const TodoList = entity({
   name: 'TodoList',
   fields: {
-    id: field.id(),
-    name: field.nonEmptyString({ trim: true }),
+    id: f.id(),
+    name: f.nonEmptyString({ trim: true }),
   },
   uses: {
     capabilities: {} as TodoCapabilities,
@@ -95,7 +95,7 @@ export const TodoApplication = ontahi({
       notifications: todoNotifications,
     },
   },
-  entities: [TodoList, Todo, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag, TodoTag],
 });
 ```
 
@@ -155,7 +155,7 @@ const notifications = adaptEffectMethods<
 const TestApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
   capabilities: { runtime: { notifications } },
-  entities: [TodoList, Todo, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag, TodoTag],
 });
 ```
 

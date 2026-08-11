@@ -5,26 +5,26 @@ instance and becomes the semantic root for identity, relations, selections, oper
 reflection, and storage interpretation.
 
 ```ts
-export const Todo = entity({
-  name: 'Todo',
+export const TodoItem = entity({
+  name: 'TodoItem',
   fields: {
-    id: field.id(),
-    list: field.ref(TodoList),
-    title: field.nonEmptyString({ trim: true, maxLength: 200 }),
-    completed: field.boolean(),
-    priority: field.enum(['low', 'normal', 'high', 'critical'] as const),
-    assigneeId: field.nullable(field.id()),
-    dueAt: field.nullable(field.datetime()),
-    createdAt: field.datetime(),
-    archived: field.boolean(),
+    id: f.id(),
+    list: f.ref(TodoList),
+    title: f.nonEmptyString({ trim: true, maxLength: 200 }),
+    completed: f.boolean(),
+    priority: f.enum(['low', 'normal', 'high', 'critical'] as const),
+    assigneeId: f.nullable(f.id()),
+    dueAt: f.nullable(f.datetime()),
+    createdAt: f.datetime(),
+    archived: f.boolean(),
   },
 });
 ```
 
-`Todo` is both a declaration and a typed value available to the rest of the application. Ontahí
+`TodoItem` is both a declaration and a typed value available to the rest of the application. Ontahí
 does not derive the Entity from storage tables or from a transport schema.
 
-The core chapters use this slightly richer Todo so each operator can stay small and concrete.
+The core chapters use this slightly richer TodoItem so each operator can stay small and concrete.
 
 ## Fields are reusable semantic values
 
@@ -45,19 +45,19 @@ operations: ({ self, operation }) => ({
 ```
 
 `title: self.fields.title` states that the operation input is the same semantic field as
-`Todo.title`. Validation, reflection, code generation, and clients preserve that link.
+`TodoItem.title`. Validation, reflection, code generation, and clients preserve that link.
 
 Common field constructors cover identities, constrained strings, numbers, booleans, dates, enums,
 JSON values, and optional or nullable values:
 
 ```ts
 const fields = {
-  id: field.id(),
-  slug: field.slug(),
-  email: field.email(),
-  priority: field.integer({ min: 0, max: 5 }),
-  status: field.enum(['open', 'done'] as const),
-  publishedAt: field.optional(field.datetime()),
+  id: f.id(),
+  slug: f.slug(),
+  email: f.email(),
+  priority: f.integer({ min: 0, max: 5 }),
+  status: f.enum(['open', 'done'] as const),
+  publishedAt: f.optional(f.datetime()),
 };
 ```
 
@@ -82,9 +82,9 @@ Reflection consumers can discover how an Entity presents itself without inventin
 client:
 
 ```ts
-export const Todo = entity({
-  name: 'Todo',
-  fields: todoFields,
+export const TodoItem = entity({
+  name: 'TodoItem',
+  fields: todoItemFields,
   display: {
     primary: 'title',
     secondary: ['completed'],

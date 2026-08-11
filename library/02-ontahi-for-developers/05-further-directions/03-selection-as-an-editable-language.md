@@ -18,6 +18,6 @@ flowchart TB
 ```
 
 That makes a UI filter more than local component state. A user could visually author “Todos older
-than 30 days,” inspect the resulting Selection, and invoke the same `Todo.complete(...)` operation
+than 30 days,” inspect the resulting Selection, and invoke the same `TodoItem.complete(...)` operation
 used by Node code. Text, chips, form controls, and raw AST become synchronized projections rather
 than competing query languages.

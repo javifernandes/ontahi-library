@@ -10,11 +10,11 @@ that run.
 
 ```ts
 const CompleteAllProgress = value('CompleteAllProgress', {
-  phase: field.enum(['updating'] as const),
+  phase: f.enum(['updating'] as const),
 });
 
 const CompleteAllOutput = value('CompleteAllOutput', {
-  completed: field.nonNegativeInteger(),
+  completed: f.nonNegativeInteger(),
 });
 
 completeAll: operation({
@@ -43,9 +43,9 @@ reports the `updating` phase, completes the open Todos, and returns `CompleteAll
 
 ```ts
 import { setTimeout as wait } from 'node:timers/promises';
-import { Todo, TodoApplication } from './graph.js';
+import { TodoItem, TodoApplication } from './graph.js';
 
-const started = await Todo.completeAll();
+const started = await TodoItem.completeAll();
 if (!started.ok) throw new Error(started.message);
 
 const run = started.value;
@@ -75,7 +75,7 @@ sequenceDiagram
   participant Worker as Durable worker
   participant DB as Application database
 
-  Client->>Server: start Todo.completeAll
+  Client->>Server: start TodoItem.completeAll
   Server->>Tasks: create run
   Tasks-->>Server: TaskRunRef
   Server-->>Client: accepted TaskRunRef
@@ -97,7 +97,7 @@ Acceptance, execution, persistence, and observation may happen in different proc
 ## Observe the same run from React
 
 ```tsx
-const completeAll = useDurableOperation(Todo.domain.completeAll);
+const completeAll = useDurableOperation(TodoItem.domain.completeAll);
 
 return (
   <div>

@@ -15,7 +15,7 @@ export const TodoApplication = ontahi({
   storage,
   tasks: inProcessTasks(),
   capabilities: { runtime: { notifications: todoNotifications } },
-  entities: [TodoList, Todo, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag, TodoTag],
 });
 ```
 
@@ -36,8 +36,8 @@ const storage = createPostgresDataGraphStorage({
 ```
 
 By default, the adapter derives plural snake-case tables and snake-case columns from the Entity
-catalog: `TodoList` maps to `todo_lists`, while the semantic Reference Field `Todo.list` maps to
-`list_id`. A physical exception is a focused override:
+catalog: `TodoList` maps to `todo_lists`, `TodoItem` maps to `todo_items`, and the semantic
+Reference Field `TodoItem.list` maps to `list_id`. A physical exception is a focused override:
 
 ```ts
 const storage = createPostgresDataGraphStorage({
