@@ -11,8 +11,6 @@ export const Todo = entity({
     title: field.nonEmptyString({ trim: true }),
     completed: field.boolean(),
   },
-  locators: { refById: 'id' },
-  identity: 'refById',
   relations: {
     list: relation.belongsTo(TodoList, { via: 'listId' }),
     tagAssignments: relation.hasMany(TodoTag, { via: 'todoId' }),

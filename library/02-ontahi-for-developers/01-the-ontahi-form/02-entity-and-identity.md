@@ -9,8 +9,6 @@ export const TodoList = entity({
     id: field.id(),
     name: field.nonEmptyString({ trim: true }),
   },
-  locators: { refById: 'id' },
-  identity: 'refById',
   operations: ({ self, commands, operation }) => ({
     list: operation({
       output: self.array(),
@@ -24,8 +22,13 @@ Entity-shaped contracts stay on the Entity: `self` for one materialized value, `
 many, and—as the next chapters show—`self.one()` or `self.many()` for semantic targets. Later
 examples import `graphSchema` as `O` only for standalone schema composition.
 
-Fields describe its values. Locators and identity will matter in the next chapter. For now, the
+Fields describe its values. The exact, required `id: field.id()` field also declares the
+conventional identity: Ontahí automatically gives TodoList a `refById` locator. For now, the
 important addition is `list`: a typed operation whose implementation is a graph query.
+
+> **Identity starts at the field.** The common case needs no parallel locator declaration. An
+> Entity with `id: field.id()` can be addressed immediately with `TodoList.refById('list-research')`.
+> Other id-shaped fields such as `ownerId` do not become identities by accident.
 
 ## Use it from Node
 
@@ -91,3 +94,22 @@ mechanics remain outside this first use.
 The entity is the shared source for identity, graph behavior, operations, reflection, storage
 adapters, and generated projections. Those surfaces interpret one declaration; they are not
 parallel schemas.
+
+When the domain needs more than the convention, make only that difference explicit. An alternate
+locator composes with `refById`:
+
+```ts
+export const Book = entity({
+  name: 'Book',
+  fields: {
+    id: field.id(),
+    slug: field.nonEmptyString({ trim: true }),
+    title: field.nonEmptyString({ trim: true }),
+  },
+  locators: { refBySlug: 'slug' },
+});
+```
+
+Book now has both `Book.refById(...)` and `Book.refBySlug(...)`; `refById` remains its default
+identity. Composite identities or a different default identity are declared explicitly, where the
+extra structure carries domain meaning.
