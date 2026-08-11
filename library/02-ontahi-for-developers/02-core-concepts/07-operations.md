@@ -1,6 +1,15 @@
-# Create, Rename, Delete
+# Operations
 
-Domain operations name the ways an entity may change.
+An \concept{Operation} names something the application can do. It owns a public input, an
+output, failures and contracts, runtime requirements, exposure, and an implementation.
+
+A Query or Command describes a data interaction. An Operation gives that interaction application
+meaning and may compose several Queries, Commands, capabilities, or durable steps behind one
+stable contract.
+
+## Name behavior on the Entity
+
+Create, rename, and delete are TodoList operations:
 
 ```ts
 operations: ({ self, commands, operation }) => ({

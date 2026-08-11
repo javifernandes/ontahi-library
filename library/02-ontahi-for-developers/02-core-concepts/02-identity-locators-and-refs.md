@@ -1,6 +1,65 @@
-# Identity and Refs
+# Identity, Locators, and Refs
 
-A Ref is a value that references one particular instance of an Entity.
+\concept{Identity} says what makes one instance of an Entity the same instance across reads,
+operations, processes, and time. A \concept{Locator} names a valid way to express that identity.
+
+## Conventional identity
+
+The common declaration places identity at the field itself:
+
+```ts
+export const TodoList = entity({
+  name: 'TodoList',
+  fields: {
+    id: field.id(),
+    name: field.nonEmptyString({ trim: true }),
+  },
+});
+```
+
+An exact, required `id: field.id()` gives TodoList a `refById` locator and makes it the
+default identity. The Entity can be addressed immediately:
+
+```ts
+const listA = TodoList.refById('A');
+```
+
+The convention is deliberately narrow. A scalar field such as `legacyOwnerId` remains an ordinary
+id value unless it is declared as `field.ref(Owner)`, and an optional or nullable `id` does not
+silently become the Entity identity.
+
+## Alternate locators
+
+A domain may expose more than one stable way to locate the same Entity:
+
+```ts
+export const Book = entity({
+  name: 'Book',
+  fields: {
+    id: field.id(),
+    slug: field.slug(),
+    title: field.nonEmptyString({ trim: true }),
+  },
+  locators: {
+    refBySlug: 'slug',
+  },
+});
+```
+
+The explicit locator composes with the convention:
+
+```ts
+Book.refById('book-42');
+Book.refBySlug('living-systems');
+```
+
+`refById` remains the default identity used to derive a canonical Ref from a materialized Book.
+When another locator must be canonical, declare that difference explicitly with
+`identity: 'refBySlug'`.
+
+## Identity as a value
+
+A \concept{Ref} is a value that references one particular instance of an Entity.
 
 ```ts
 import { TodoList } from './graph.js';
@@ -59,6 +118,15 @@ console.log(result.value);
 
 The operation receives a semantic target, not a caller-owned snapshot. The Ref preserves which
 TodoList the caller means until the runtime interprets that identity.
+
+> [!MARGIN] **The domain link that an id loses.** A REST endpoint or GraphQL field commonly
+> receives `listId: ID` because its input language stops at the transport boundary. The scalar
+> carries a value, but not the fact that the operation expects one TodoList. Each handler or
+> resolver must then interpret the id, load the Entity, handle its absence, and mix that plumbing
+> into the application behavior. Ontahí puts the semantic target in the operation contract as
+> `self.one()`. A boundary may encode it as an id, but the operation remains defined in terms of
+> the domain. That abstraction lets Refs, records, and Selections compose without rewriting the
+> operation for each transport or way of locating its target.
 
 ## Composite identity
 
@@ -147,7 +215,9 @@ await complete.executeAsync({
 });
 
 await complete.executeAsync({
-  todos: Todo.selection(todo => todo.listId.eq('list-research')),
+  todos: Todo.selection(todo =>
+    todo.list.eq(TodoList.refById('list-research')),
+  ),
 });
 ```
 

@@ -1,6 +1,6 @@
-# Reflection, Explorer, and Host Responsibilities
+# Reflection and Explorer
 
-Reflection makes the composed application inspectable. It does not reverse-engineer HTTP routes,
+\concept{Reflection} makes the composed application inspectable. It does not reverse-engineer HTTP routes,
 database tables, or TypeScript source. The same graph that executes the application exposes a
 catalog of its Entities, operations, tasks, and ingress.
 

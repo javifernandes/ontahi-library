@@ -1,9 +1,8 @@
 # Storage Adapters
 
+A \concept{Storage Adapter} interprets Queries and Commands for a composed application.
 Entities describe identity, relations, Selections, and operations. They do not know whether a Query
 runs over an object in memory or a PostgreSQL table.
-
-Storage interprets graph reads and changes for one composed application.
 
 ## Start in memory
 
@@ -37,8 +36,8 @@ const storage = createPostgresDataGraphStorage({
 ```
 
 By default, the adapter derives plural snake-case tables and snake-case columns from the Entity
-catalog: `TodoList` maps to `todo_lists`, and `listId` maps to `list_id`. A physical exception is a
-focused override:
+catalog: `TodoList` maps to `todo_lists`, while the semantic Reference Field `Todo.list` maps to
+`list_id`. A physical exception is a focused override:
 
 ```ts
 const storage = createPostgresDataGraphStorage({

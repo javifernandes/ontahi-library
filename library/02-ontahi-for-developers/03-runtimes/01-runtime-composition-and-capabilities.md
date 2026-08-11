@@ -1,7 +1,8 @@
-# Capabilities and Runtime Composition
+# Runtime Composition and Capabilities
 
-An Entity may need work that does not belong to its graph: send a notification, read the current
-user, call an external service, or apply a host policy. A Capability names that need. The
+A \concept{Runtime} interprets Ontahí's semantic declarations in a concrete environment.
+An Entity may also need work that does not belong to its graph: send a notification, read the current
+user, call an external service, or apply a host policy. A \concept{Capability} names that need. The
 application supplies the implementation.
 
 > [!MARGIN] **A draft, low-level surface.** Today `capabilities` is typed resource injection. It can

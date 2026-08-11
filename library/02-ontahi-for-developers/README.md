@@ -1,58 +1,60 @@
 # Ontahí for Developers
 
-Model the domain once. Let runtimes carry it.
+Model the domain once. Let runtimes interpret it.
 
-This book teaches one way to build an Ontahí application: the way expressed by the framework's
-current semantic declarations, executable examples, and runtime contracts.
+This book teaches the current Ontahí application model through its public declarations, executable
+examples, and runtime contracts. It begins with a working application, then names each core
+concept directly and shows how those concepts compose.
 
-It does not begin with the history of Ontahí. It does not translate every concept into the
-vocabulary of another technology. It starts with the application and follows its model wherever
-that model is interpreted.
+It does not reconstruct Ontahí's history or translate the model into the vocabulary of another
+technology.
 
 ## Shape
 
-### Part I — The Ontahí Form
+### Part I — Getting Started
 
-1. [One Application](01-the-ontahi-form/01-one-application.md)
-2. [An Entity at Work](01-the-ontahi-form/02-entity-and-identity.md)
-3. [Identity and Refs](01-the-ontahi-form/03-identity-and-refs.md)
-4. [Relations and Topology](01-the-ontahi-form/04-relations-and-topology.md)
+1. [One Application](01-getting-started/01-one-application.md)
+2. [Your First Entity](01-getting-started/02-your-first-entity.md)
 
-### Part II — Changing State
+### Part II — Core Concepts
 
-5. [Create, Rename, Delete](02-changing-state/01-create-rename-delete.md)
-6. [Selection: One Set, Many Uses](02-changing-state/02-selection-one-set-many-uses.md)
-7. [Queries and Commands](02-changing-state/03-queries-and-commands.md)
-8. [Operation Contracts and Failures](02-changing-state/04-operation-contracts-and-failures.md)
-9. [Durable Operations](02-changing-state/05-durable-operations.md)
+3. [Entities](02-core-concepts/01-entities.md)
+4. [Identity, Locators, and Refs](02-core-concepts/02-identity-locators-and-refs.md)
+5. [Relations](02-core-concepts/03-relations.md)
+6. [Selections](02-core-concepts/04-selections.md)
+7. [Queries](02-core-concepts/05-queries.md)
+8. [Commands](02-core-concepts/06-commands.md)
+9. [Operations](02-core-concepts/07-operations.md)
+10. [Operation Contracts and Failures](02-core-concepts/08-operation-contracts-and-failures.md)
+11. [Durable Operations](02-core-concepts/09-durable-operations.md)
 
-### Part III — Carrying the Model
+### Part III — Runtimes
 
-10. [Capabilities and Runtime Composition](03-carrying-the-model/01-capabilities-and-runtime-composition.md)
-11. [Storage Adapters](03-carrying-the-model/02-storage-adapters.md)
-12. [Transport, Bridges, and HTTP Ingress](03-carrying-the-model/03-transport-bridges-and-http-ingress.md)
+12. [Runtime Composition and Capabilities](03-runtimes/01-runtime-composition-and-capabilities.md)
+13. [Storage Adapters](03-runtimes/02-storage-adapters.md)
+14. [Transport and HTTP Ingress](03-runtimes/03-transport-and-http-ingress.md)
 
-### Part IV — Projecting the Application
+### Part IV — Reflection and Clients
 
-13. [Browser Projection Internals](04-projecting-the-application/01-browser-projection-internals.md)
-14. [Reflection, Explorer, and Host Responsibilities](04-projecting-the-application/02-reflection-explorer-and-host-responsibilities.md)
+15. [Reflection and Explorer](04-reflection-and-clients/01-reflection-and-explorer.md)
+16. [Browser Client and Projection](04-reflection-and-clients/02-browser-client-and-projection.md)
 
 ### Part V — Further Directions
 
-15. [Further Directions](05-further-directions/01-further-directions.md)
-16. [AI Operations](05-further-directions/02-ai-operations.md)
-17. [Selection as an Editable Language](05-further-directions/03-selection-as-an-editable-language.md)
-18. [Runtime Data Reflection](05-further-directions/04-runtime-data-reflection.md)
-19. [Alive UI](05-further-directions/05-alive-ui.md)
-20. [Continuous Execution and First-Class Events](05-further-directions/06-continuous-execution-and-first-class-events.md)
-21. [Semantic Operational Policy](05-further-directions/07-semantic-operational-policy.md)
-22. [A Topology of Graphs](05-further-directions/08-a-topology-of-graphs.md)
-23. [More Adapters, Same Contracts](05-further-directions/09-more-adapters-same-contracts.md)
-24. [Living Entities](05-further-directions/10-living-entities.md)
+17. [Further Directions](05-further-directions/01-further-directions.md)
+18. [AI Operations](05-further-directions/02-ai-operations.md)
+19. [Selection as an Editable Language](05-further-directions/03-selection-as-an-editable-language.md)
+20. [Runtime Data Reflection](05-further-directions/04-runtime-data-reflection.md)
+21. [Alive UI](05-further-directions/05-alive-ui.md)
+22. [Continuous Execution and First-Class Events](05-further-directions/06-continuous-execution-and-first-class-events.md)
+23. [Semantic Operational Policy](05-further-directions/07-semantic-operational-policy.md)
+24. [A Topology of Graphs](05-further-directions/08-a-topology-of-graphs.md)
+25. [More Adapters, Same Contracts](05-further-directions/09-more-adapters-same-contracts.md)
+26. [Living Entities](05-further-directions/10-living-entities.md)
 
-The sequence follows the canonical-surface inventory. Its distinctions are deliberate:
-Application, Entity, Ref, Relation, Selection, Query, Command, Domain Operation, Capability,
-Ingress, and Runtime each carry a different job.
+Part I gets a small application running. Part II is the semantic backbone: Entity, Ref, Relation,
+Selection, Query, Command, and Operation each carry a distinct job. Part III explains where that
+model executes. Part IV explains how it reflects and projects into clients.
 
 ## Executable spine
 
@@ -70,19 +72,18 @@ and its end-to-end assertions in
 
 ## Writing posture
 
-Lead with executable form. Use the application first from ordinary Node code. Introduce the React
-projection only when the browser boundary creates pressure for it. Explain an abstraction when the
-code creates pressure for its name. Prefer one complete example over a catalog of disconnected
-features.
+Lead with executable form. Getting Started uses one continuous application and postpones details
+that are not needed for the first result. Core Concepts may use compact, independent examples when
+that makes an operator or contract clearer; they are demonstrations, not reader exercises.
 
-Keep the main narrative in Ontahí's own vocabulary. A short margin note may contrast a familiar
-transport or framework pattern when that contrast makes the pressure behind an Ontahí abstraction
-concrete; it must not turn into a second tutorial.
+Keep the main narrative in Ontahí's own vocabulary. Mark a formal concept when it is introduced.
+A short margin note may contrast a familiar transport or framework pattern when that contrast
+makes the pressure behind an Ontahí abstraction concrete; it must not turn into a second tutorial.
 
 React support stays transparent on the main path. Cache behavior and invalidation mechanics belong
-to the advanced projection section. The main path uses canonical APIs. When no semantic
+to the advanced browser-client chapter. The main path uses canonical APIs. When no semantic
 replacement exists, a required draft surface is labeled explicitly rather than becoming doctrine
-by appearing in a book.
+by appearing in the book.
 
-Use diagrams sparingly where runtime distribution, execution paths, or lifecycle boundaries are
-harder to see in prose. They clarify the model; they do not decorate every chapter.
+Use diagrams where runtime distribution, execution paths, or lifecycle boundaries are harder to
+see in prose. They clarify the model; they do not decorate every chapter.

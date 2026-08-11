@@ -1,7 +1,8 @@
-# Transport, Bridges, and HTTP Ingress
+# Transport and HTTP Ingress
 
-Node can invoke `TodoList.rename(...)` directly. Once that same intention crosses a process
-boundary, a transport must carry it without becoming a second definition of the operation.
+A \concept{Transport} carries an operation intention across a process boundary without becoming
+a second definition of that operation. Node can invoke `TodoList.rename(...)` directly; a remote
+client needs that intention to reach the same application runtime.
 
 Ontahí currently has two different HTTP shapes:
 

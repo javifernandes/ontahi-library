@@ -1,6 +1,7 @@
 # Operation Contracts and Failures
 
-An operation's input schema says which values may enter. Put every condition knowable from those
+An \concept{Operation Contract} says which values may enter, which values may leave, and which
+failures or requirements are part of the operation's public meaning. Put every condition knowable from those
 values in that schema. Reserve executable preconditions for facts that must be resolved when the
 operation runs.
 

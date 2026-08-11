@@ -1,6 +1,7 @@
-# Browser Projection Internals
+# Browser Client and Projection
 
-The browser does not import the server application. It receives an executable projection of the
+A \concept{Client Projection} preserves the public, executable portion of the application model
+for another environment. The browser does not import the server application. It receives a projection of the
 same model: browser-safe Entity schemas, identity and locator rules, relations, and the contracts
 of operations exposed through a bridge.
 

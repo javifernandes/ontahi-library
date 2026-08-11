@@ -1,6 +1,6 @@
 # Durable Operations
 
-A durable operation is a domain operation whose work continues beyond its initial invocation.
+A \concept{Durable Operation} is a domain operation whose work continues beyond its initial invocation.
 Starting it returns the identity of a run. Progress, completion, and failure are observed through
 that run.
 
