@@ -42,7 +42,7 @@ Supabase demonstrates the other topology: browser execution is legitimate only b
 boundary enforces grants and row-level security. Ontahí can reflect and anticipate those rules, but
 client-side checks are not authority.
 
-A concept{Operation} still matters when the application names behavior: enforce an invariant,
+A \concept{Operation} still matters when the application names behavior: enforce an invariant,
 coordinate multiple changes, use secrets or capabilities, emit effects, or run durable work. The
 distinction becomes semantic instead of infrastructural:
 
