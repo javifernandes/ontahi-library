@@ -2,7 +2,7 @@
 
 A \concept{Command} describes a storage-neutral change. It names the target Entity, the
 Selection being changed, the payload, expected cardinality, and any fields to return. Building a
-Command does not mutate storage; a configured runtime interprets it.
+Command does not mutate storage; calling `run()` asks a configured runtime to interpret it.
 
 ## Insert from the Entity
 
@@ -17,6 +17,8 @@ const createTodo = TodoItem.insert({
   title: 'Read the runtime notes',
   completed: false,
 });
+
+const creation = createTodo.run();
 ```
 
 Ask for the fields needed by the next step without materializing an unspecified record shape:
@@ -79,6 +81,7 @@ const overdue = TodoItem.selection(todo =>
 );
 
 const completeOverdue = overdue.update({ completed: true });
+const completion = completeOverdue.run();
 ```
 
 Return only the changed fields when they matter:
@@ -87,7 +90,7 @@ Return only the changed fields when they matter:
 const completeAndReturn = overdue.updateReturning(
   { completed: true },
   ['id', 'completed'],
-);
+).run();
 ```
 
 The Command receives the Selection expression itself. It does not first read matching rows and
@@ -98,11 +101,13 @@ turn them into a list of ids.
 ```ts
 const removeArchived = TodoItem
   .selection(todo => todo.archived.eq(true))
-  .delete();
+  .delete()
+  .run();
 
 const removeAndReturnIds = TodoItem
   .selection(todo => todo.archived.eq(true))
-  .deleteReturning(['id']);
+  .deleteReturning(['id'])
+  .run();
 ```
 
 Returning variants make follow-up behavior explicit without changing the Command target.
@@ -148,4 +153,6 @@ complete: operation({
 ```
 
 When an operation must coordinate several reads, Commands, or capabilities, it can execute each
-runtime computation and continue. The Command language remains the same in either form.
+runtime computation and continue. Returning a final Command lets the operation runtime execute it;
+calling `run()` executes an intermediate Command explicitly. The language remains the same in
+either form.

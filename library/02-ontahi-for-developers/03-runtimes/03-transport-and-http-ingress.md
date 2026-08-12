@@ -135,6 +135,11 @@ Use browser-direct execution only where the declared authority and database poli
 behavior legitimate. Use a bridged operation when the intention, policy, coordination, secret, or
 runtime belongs on the server.
 
+The current generic bridge is operation-first. A larger direction is to let an ordinary Query or
+Command cross the same runtime boundary when storage is server-only, while keeping authorization as
+an independent graph policy rather than forcing an otherwise empty wrapper operation. See
+[Data Graph Across Boundaries](../05-further-directions/11-data-graph-across-boundaries.md).
+
 ## Give an operation explicit HTTP ingress
 
 External systems create different pressure. A webhook already has its own route, authentication,

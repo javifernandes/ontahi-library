@@ -39,6 +39,9 @@ The same base opens several system-level lines:
   transport, task, and UI technologies to test the portability of the contracts.
 - [**Living Entities**](10-living-entities.md) is the farther horizon: safely evolving the model
   itself at runtime.
+- [**Data Graph Across Boundaries**](11-data-graph-across-boundaries.md) lets the same Query or
+  Command bind to direct storage or a policy-controlled remote graph executor without an empty
+  operation wrapper.
 
 ```mermaid
 flowchart TB
@@ -47,7 +50,7 @@ flowchart TB
   Base --> DataReflection["Runtime Data Reflection"]
   Selection --> Alive["Alive UI"]
   DataReflection --> Alive
-  Base --> SystemDirections["Events · policy · topology · adapters"]
+  Base --> SystemDirections["Events · policy · topology · adapters · graph bridge"]
   SystemDirections --> Living["Living Entities"]
 ```
 

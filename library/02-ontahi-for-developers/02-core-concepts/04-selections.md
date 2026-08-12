@@ -62,6 +62,10 @@ const portableAst = triageQueue.toJSON();
 The serialized form preserves the Entity root and membership expression. That is what lets the
 same criterion cross a client/server boundary or become editable by another tool.
 
+When `TodoItem` comes from a configured runtime, the Selection also carries that execution binding
+in memory. The binding is deliberately absent from `toJSON()`: the value stays portable even though
+the local object knows how this application executes it.
+
 ## Identities can describe membership too
 
 An operation input declared as `self.many()` accepts a predicate-defined Selection, explicit
@@ -78,22 +82,27 @@ Ontahí normalizes each form into the same semantic target. The operation does n
 
 ## One Selection, different interpretations
 
-A Query can observe the set:
+A bound Selection can observe the set directly or add read shape first:
 
 ```ts
 const nextTen = triageQueue
   .orderBy(todo => todo.createdAt)
   .limit(10);
+
+const rows = nextTen.run();
 ```
 
-A Command can change exactly the same set:
+A Command can change exactly the same set through the same binding:
 
 ```ts
-const completeTriageQueue = triageQueue.update({ completed: true });
+const result = triageQueue
+  .update({ completed: true })
+  .run();
 ```
 
 The Selection remains membership. `orderBy` and `limit` add read shape; `update` chooses a write
-interpretation. The next two chapters describe those operator surfaces directly.
+interpretation; `run` asks the bound runtime to interpret the resulting program. The next two
+chapters describe those operator surfaces directly.
 
 ## The UI can author the same value
 

@@ -51,6 +51,7 @@ technology.
 24. [A Topology of Graphs](05-further-directions/08-a-topology-of-graphs.md)
 25. [More Adapters, Same Contracts](05-further-directions/09-more-adapters-same-contracts.md)
 26. [Living Entities](05-further-directions/10-living-entities.md)
+27. [Data Graph Across Boundaries](05-further-directions/11-data-graph-across-boundaries.md)
 
 Part I gets a small application running. Part II is the semantic backbone: Entity, Ref, Relation,
 Selection, Query, Command, and Operation each carry a distinct job. Part III explains where that

@@ -5,15 +5,19 @@ the Query adds result shape, relations, order, and bounds. Building one does not
 
 ## Choose the set
 
-Start from every instance or from a predicate:
+Start from every instance when the read itself is the only value being authored:
 
 ```ts
 const allTodos = TodoItem.all();
-
-const openTodos = TodoItem.where(todo => todo.completed.eq(false));
 ```
 
-A previously authored Selection is already a valid starting point:
+Start from a Selection when membership has its own meaning or may be reused:
+
+```ts
+const openTodos = TodoItem.selection(todo => todo.completed.eq(false));
+```
+
+That Selection is already a valid Query starting point:
 
 ```ts
 const visibleTodos = TodoItem
@@ -23,7 +27,8 @@ const visibleTodos = TodoItem
 const query = visibleTodos.orderBy(todo => todo.title);
 ```
 
-`where` can continue narrowing a Query. Each call combines with the existing membership:
+`TodoItem.where(...)` remains a query-only shortcut. Once a Query exists, `where` can keep
+narrowing it; each call combines with the existing membership:
 
 ```ts
 const urgentOpenTodos = TodoItem
@@ -131,8 +136,12 @@ const anyUrgent = urgentOpenTodos.exists();
 const stream = todoSummaries.stream();
 ```
 
-These are runtime computations. An operation may return a Query directly when it only needs the
-final result:
+`openTodos` is still the same Selection value; its runtime binding makes the read interpretations
+available without rebuilding it through `TodoItem.where(openTodos)`. Shaping methods preserve that
+binding.
+
+These methods produce runtime computations. An operation may return a Query directly when it only
+needs the final result:
 
 ```ts
 list: operation({
