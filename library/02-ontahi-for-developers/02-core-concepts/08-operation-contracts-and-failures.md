@@ -192,9 +192,11 @@ A requirement may inspect the normalized input and runtime context to answer que
 whether a feature is enabled or an actor may attempt the operation. Requirements run before
 contracts and the body, and the same requirement can be installed across a layer of operations.
 
-Ontahí has the requirement seam and a separate permission probe today, while authentication and
-authorization authoring are still being consolidated. `todoListWritesEnabled` above therefore
-stands for a host-supplied requirement; this chapter does not invent a final authorization DSL.
+Ontahí now provides a provider-neutral Principal and `app.require.authenticated()` for the basic
+authentication gate. Authorization authoring is still being consolidated. `todoListWritesEnabled`
+above therefore stands for a host-supplied policy requirement; this chapter does not invent a final
+authorization DSL. See [Authentication and Principals](../03-runtimes/04-authentication-and-principals.md)
+for the settled authentication path.
 
 ## The operation execution envelope
 

@@ -46,9 +46,10 @@ step: the mount root is deployment configuration supplied to each runtime. This 
 Express application to host several Ontahí applications under different roots.
 
 > [!MARGIN] **Express configuration stops at the adapter boundary.** Mount and surface paths,
-> Explorer exposure, ingress body limits, and error reporting belong here. CORS, authentication,
-> rate limiting, request identity, and trust-proxy policy remain ordinary host middleware unless a
-> future Ontahí contract gives them semantic meaning.
+> Explorer exposure, ingress body limits, and error reporting belong here. CORS, rate limiting, and
+> trust-proxy policy remain ordinary host concerns. Authentication providers and sessions also
+> belong to the host, which maps their result to Ontahí's invocation Principal; see
+> [Authentication and Principals](04-authentication-and-principals.md).
 
 The bridge envelope contains an operation identity and opaque input:
 

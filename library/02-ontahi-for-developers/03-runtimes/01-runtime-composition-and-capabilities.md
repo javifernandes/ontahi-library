@@ -1,8 +1,8 @@
 # Runtime Composition and Capabilities
 
 A \concept{Runtime} interprets Ontahí's semantic declarations in a concrete environment.
-An Entity may also need work that does not belong to its graph: send a notification, read the current
-user, call an external service, or apply a host policy. A \concept{Capability} names that need. The
+An Entity may also need work that does not belong to its graph: send a notification, call an
+external service, or apply a host policy. A \concept{Capability} names that need. The
 application supplies the implementation.
 
 > [!MARGIN] **A draft, low-level surface.** Today `capabilities` is typed resource injection. It can
@@ -173,3 +173,7 @@ does not yet reflect these dependencies or validate the complete Capability grap
 time. Keep the declared surface narrow: it documents and types what the Entity uses, but the host
 remains responsible for supplying it correctly. Repeated semantic needs may eventually deserve
 their own declared model rather than another arbitrary object path.
+
+Authentication is one such need that now has its own model. Use the invocation Principal rather
+than introducing a generic `currentUser` Capability; see
+[Authentication and Principals](04-authentication-and-principals.md).

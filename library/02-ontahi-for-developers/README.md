@@ -33,25 +33,26 @@ technology.
 12. [Runtime Composition and Capabilities](03-runtimes/01-runtime-composition-and-capabilities.md)
 13. [Storage Adapters](03-runtimes/02-storage-adapters.md)
 14. [Transport and HTTP Ingress](03-runtimes/03-transport-and-http-ingress.md)
+15. [Authentication and Principals](03-runtimes/04-authentication-and-principals.md)
 
 ### Part IV — Reflection and Clients
 
-15. [Reflection and Explorer](04-reflection-and-clients/01-reflection-and-explorer.md)
-16. [Browser Client and Projection](04-reflection-and-clients/02-browser-client-and-projection.md)
+16. [Reflection and Explorer](04-reflection-and-clients/01-reflection-and-explorer.md)
+17. [Browser Client and Projection](04-reflection-and-clients/02-browser-client-and-projection.md)
 
 ### Part V — Further Directions
 
-17. [Further Directions](05-further-directions/01-further-directions.md)
-18. [AI Operations](05-further-directions/02-ai-operations.md)
-19. [Selection as an Editable Language](05-further-directions/03-selection-as-an-editable-language.md)
-20. [Runtime Data Reflection](05-further-directions/04-runtime-data-reflection.md)
-21. [Alive UI](05-further-directions/05-alive-ui.md)
-22. [Continuous Execution and First-Class Events](05-further-directions/06-continuous-execution-and-first-class-events.md)
-23. [Semantic Operational Policy](05-further-directions/07-semantic-operational-policy.md)
-24. [A Topology of Graphs](05-further-directions/08-a-topology-of-graphs.md)
-25. [More Adapters, Same Contracts](05-further-directions/09-more-adapters-same-contracts.md)
-26. [Living Entities](05-further-directions/10-living-entities.md)
-27. [Data Graph Across Boundaries](05-further-directions/11-data-graph-across-boundaries.md)
+18. [Further Directions](05-further-directions/01-further-directions.md)
+19. [AI Operations](05-further-directions/02-ai-operations.md)
+20. [Selection as an Editable Language](05-further-directions/03-selection-as-an-editable-language.md)
+21. [Runtime Data Reflection](05-further-directions/04-runtime-data-reflection.md)
+22. [Alive UI](05-further-directions/05-alive-ui.md)
+23. [Continuous Execution and First-Class Events](05-further-directions/06-continuous-execution-and-first-class-events.md)
+24. [Semantic Operational Policy](05-further-directions/07-semantic-operational-policy.md)
+25. [A Topology of Graphs](05-further-directions/08-a-topology-of-graphs.md)
+26. [More Adapters, Same Contracts](05-further-directions/09-more-adapters-same-contracts.md)
+27. [Living Entities](05-further-directions/10-living-entities.md)
+28. [Data Graph Across Boundaries](05-further-directions/11-data-graph-across-boundaries.md)
 
 Part I gets a small application running. Part II is the semantic backbone: Entity, Ref, Relation,
 Selection, Query, Command, and Operation each carry a distinct job. Part III explains where that
@@ -62,14 +63,14 @@ model executes. Part IV explains how it reflects and projects into clients.
 The code builds progressively: a fence may omit imports or defaults introduced earlier, but its
 public identifiers and call shapes match the current packages unless the text labels a surface as
 draft or transitional. The complete
-[`todo-express` application](https://github.com/javifernandes/bookops/tree/main/ontahi/examples/todo-express)
+[`todo-express` application](https://github.com/javifernandes/ontahi/tree/main/examples/todo-express)
 checks the canonical path through code generation, server and browser typechecking, and integration
 tests. Its server declarations live in
-[`src/todo.ts`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/src/todo.ts),
+[`src/todo.ts`](https://github.com/javifernandes/ontahi/blob/main/examples/todo-express/src/todo.ts),
 its React use in
-[`client/src/App.tsx`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/client/src/App.tsx),
+[`client/src/App.tsx`](https://github.com/javifernandes/ontahi/blob/main/examples/todo-express/client/src/App.tsx),
 and its end-to-end assertions in
-[`test/application.test.ts`](https://github.com/javifernandes/bookops/blob/main/ontahi/examples/todo-express/test/application.test.ts).
+[`test/application.test.ts`](https://github.com/javifernandes/ontahi/blob/main/examples/todo-express/test/application.test.ts).
 
 ## Writing posture
 
