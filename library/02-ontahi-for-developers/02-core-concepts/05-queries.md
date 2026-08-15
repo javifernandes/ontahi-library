@@ -61,6 +61,43 @@ const rows = TodoItem.all().select(todo => ({
 
 The inferred TypeScript result follows the projected shape.
 
+## Reuse a result view
+
+A \concept{View} names a reusable result shape. Use it when several callers need the same fields
+and Relation traversal:
+
+```ts
+const TodoListRow = TodoItem.view('TodoListRow', {
+  id: true,
+  title: true,
+  list: {
+    id: true,
+    name: true,
+  },
+});
+
+const rows = await openTodos.as(TodoListRow).run();
+```
+
+`true` keeps the field's ordinary value. For a Reference Field, that ordinary value is still a
+Ref. A nested object traverses the declared Relation and materializes the related Entity:
+
+```ts
+const TodoRefs = TodoItem.view('TodoRefs', {
+  id: true,
+  list: true, // EntityRef<'TodoList'>
+});
+
+const TodoWithListName = TodoItem.view('TodoWithListName', {
+  id: true,
+  list: { name: true }, // { name: string }
+});
+```
+
+The shape is finite and explicit even when the Entity graph contains cycles. Ontahí never follows
+Relations recursively unless the View asks it to. The same View can shape a Query, a Selection, or
+a Selection returned by an Operation.
+
 ## Include related Entities
 
 Declared Relations are available from the Query proxy:

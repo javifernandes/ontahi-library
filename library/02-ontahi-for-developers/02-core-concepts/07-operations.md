@@ -74,6 +74,52 @@ if (!deleted.ok) throw new Error(`TodoList.delete failed: ${deleted.kind}`);
 The caller uses the entity, its locator, and its operations. It does not construct transport URLs,
 write a storage query, or manually turn the Ref into a Selection.
 
+## Shape a Selection result
+
+An Operation may own membership while leaving result shape to its caller. Declare a Selection
+output with `self.one()` or `self.many()`, and return that Selection without reading it:
+
+```ts
+available: operation({
+  input: O.object({
+    trips: self.many(),
+  }),
+  output: self.many(),
+  run: ({ trips }) =>
+    trips.and(trip => trip.status.eq('available')),
+}),
+```
+
+The caller supplies a View and chooses when to execute:
+
+```ts
+const candidateTrips = Trip.selection(trip => trip.region.eq('south'));
+
+const result = await Trip
+  .available({ trips: candidateTrips })
+  .as(TripList)
+  .run();
+
+if (!result.ok) throw new Error(`Trip.available failed: ${result.kind}`);
+
+const trips = result.value;
+```
+
+The Operation contributes the semantic population; the caller contributes the result shape. The
+runtime combines both into one final Query instead of loading Entity snapshots and hydrating
+Relations afterward.
+
+Projectability is explicit. `self.one()` and `self.many()` produce lazy calls with `.as(view)`.
+`self.array()`, Entity snapshots, and ordinary Value outputs remain fixed, eager results. A
+projectable body must return a declarative Selection; calling `.run()` inside the body materializes
+too early and prevents this composition.
+
+This composition currently belongs to the local Core runtime. Remote operation clients do not yet
+carry caller-authored Views across the bridge.
+
+For diagnostics and tests, `as(view).inspect()` returns the composed Query without reading storage.
+Application code normally uses `run()`.
+
 ## Use the same operations from React
 
 A projected mutation opts into the bridge and declares which reads become stale after success:
