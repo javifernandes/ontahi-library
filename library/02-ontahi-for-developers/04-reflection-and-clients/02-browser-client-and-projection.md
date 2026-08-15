@@ -1,41 +1,46 @@
 # Browser Client and Projection
 
 A \concept{Client Projection} preserves the public, executable portion of the application model
-for another environment. The browser does not import the server application. It receives a projection of the
-same model: browser-safe Entity schemas, identity and locator rules, relations, and the contracts
-of operations exposed through a bridge.
+for another environment. The browser does not import the server application. It receives a
+projection of the same model: browser-safe Entity schemas, identity and locator rules, relations,
+and the contracts of operations exposed through a bridge.
 
 Operation bodies, Capability implementations, storage, task executors, secrets, and server-only
 operations stay on the server.
 
+Every analyzable Ontahí application can produce this projection. Producing it is optional: a
+server-only or Node-only application needs no generated client artifact. The boundary appears only
+when another runtime needs to carry the model without carrying its server implementation.
+
 ## Generate the browser surface
 
-The host projects its application at build time:
+The host installs codegen as a development dependency:
 
-```js
-import {
-  analyzeOntahiApplication,
-  createFileSystemSourceLoader,
-  renderGeneratedClientEntityModule,
-} from '@ontahi/codegen';
-
-const application = analyzeOntahiApplication({
-  graphApiPath: './src/graph.ts',
-  sourceLoader: createFileSystemSourceLoader({ rootDir: process.cwd() }),
-});
-
-if (application.diagnostics.length > 0) {
-  throw new Error(JSON.stringify(application.diagnostics, null, 2));
-}
-
-const source = renderGeneratedClientEntityModule({
-  entities: application.clientEntities,
-});
+```sh
+pnpm add --save-exact --save-dev @ontahi/codegen@alpha
 ```
 
-`application.clientEntities` is intentionally smaller than the analyzed application. The
-generated module carries enough meaning for code such as this to remain typed and semantic in the
-browser:
+The conventional application needs only package scripts:
+
+```json
+{
+  "scripts": {
+    "codegen": "ontahi-codegen",
+    "codegen:check": "ontahi-codegen --check"
+  }
+}
+```
+
+`pnpm codegen` analyzes `src/graph.ts` and writes `src/generated/client-entities.ts`. `--watch`
+regenerates when a source in the application model changes. Hosts with a different layout can
+state only that difference:
+
+```sh
+ontahi-codegen --graph server/application.ts --output browser/generated/entities.ts
+```
+
+The generated client projection is intentionally smaller than the analyzed application. It
+carries enough meaning for code such as this to remain typed and semantic in the browser:
 
 ```ts
 TodoItem.refById('todo-write-outline');
@@ -45,7 +50,9 @@ TodoItem.domain.complete.output;
 ```
 
 The generated file is deterministic and checked for drift; application code imports it but does
-not edit it. Output paths, formatting, import aliases, and build integration remain host choices.
+not edit it. The command owns analysis, diagnostics, rendering, writes, and dependency-aware watch
+lifecycle. The lower-level `@ontahi/codegen` API remains available for build systems that need
+multiple or custom projections.
 
 > [!MARGIN] **Projection is not a shared server bundle.** A conventional shared-types package may
 > reproduce request and response shapes while losing identity, Selection semantics, and operation

@@ -68,7 +68,42 @@ list: operation({
 Because `list` has no input, its operation identity is already a complete observation key. More
 specific query metadata is only needed when an operation's input creates distinct observations.
 
-Codegen emits the browser-safe entity. React uses that projection directly:
+## Generate the client projection
+
+A Node-only application does not need codegen. Add it when code in another environment—such as a
+browser—needs to use the application model:
+
+```sh
+pnpm add --save-exact @ontahi/react@alpha
+pnpm add @tanstack/react-query
+pnpm add --save-exact --save-dev @ontahi/codegen@alpha
+```
+
+For the conventional `src/graph.ts` composition root, no generation script is necessary:
+
+```json
+{
+  "scripts": {
+    "codegen": "ontahi-codegen",
+    "codegen:check": "ontahi-codegen --check"
+  }
+}
+```
+
+```sh
+pnpm codegen
+```
+
+The command generates `src/generated/client-entities.ts`. It analyzes the same application but
+projects only browser-safe schemas and bridge-exposed operation contracts. Implementations,
+Capabilities, storage, secrets, and server-only operations do not cross that boundary.
+
+> [!MARGIN] **More than a transport specification.** The pressure resembles generating an OpenAPI
+> document from an HTTP API, but the result is not merely a route and payload description. Ontahí
+> emits an executable semantic projection that preserves Entity identity, relations, Selections,
+> and operation contracts independently of the transport carrying them.
+
+React uses that generated projection directly:
 
 ```tsx
 import { useOperationQuery } from '@ontahi/react/graph';
