@@ -100,6 +100,10 @@ a Selection returned by an Operation.
 
 ## Include related Entities
 
+Views are the preferred reusable result-shaping API. `select` and `include` are the lower-level
+Query surface: use them for one-off shapes or when a caller needs relation-specific ordering,
+limits, or other controls that are not part of a View.
+
 Declared Relations are available from the Query proxy:
 
 ```ts
