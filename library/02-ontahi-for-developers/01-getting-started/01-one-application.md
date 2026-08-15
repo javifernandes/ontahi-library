@@ -2,6 +2,12 @@
 
 An Ontahí application begins by declaring what exists and choosing the runtimes that can carry it.
 
+Install the framework package at the current public alpha:
+
+```sh
+pnpm add --save-exact @ontahi/core@alpha
+```
+
 ```ts
 export const TodoApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
@@ -30,14 +36,23 @@ binds both sides once.
 
 ## Mount it in a host
 
-An Express host can expose the composed application:
+Install Express and its Ontahí runtime adapter:
+
+```sh
+pnpm add express
+pnpm add --save-exact @ontahi/runtime-express@alpha
+```
+
+Then mount the composed application like any other Express middleware:
 
 ```ts
-server.use(
-  ontahiExpress(TodoApplication, {
-    explorer: { indexFile },
-  }),
-);
+import { ontahiExpress } from '@ontahi/runtime-express';
+import express from 'express';
+
+const server = express();
+
+server.use(ontahiExpress(TodoApplication));
+server.listen(3001);
 ```
 
 The adapter gives existing operations, reflection, task snapshots, and Explorer data an HTTP
@@ -48,4 +63,4 @@ storage, workers, transports, and host capabilities without changing the Entity 
 
 The next chapter adds the first Entity and calls one of its operations from Node and React. The
 complete application is runnable in the
-[`todo-express` example](https://github.com/javifernandes/bookops/tree/main/ontahi/examples/todo-express).
+[`todo-express` example](https://github.com/javifernandes/ontahi/tree/main/examples/todo-express).
