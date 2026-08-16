@@ -114,8 +114,24 @@ Projectability is explicit. `self.one()` and `self.many()` produce lazy calls wi
 projectable body must return a declarative Selection; calling `.run()` inside the body materializes
 too early and prevents this composition.
 
-This composition currently belongs to the local Core runtime. Remote operation clients do not yet
-carry caller-authored Views across the bridge.
+Generated clients preserve projectability. In React, apply the View to the generated Operation and
+pass the resulting operation value to `useOperationQuery`:
+
+```tsx
+const candidateTrips = useMemo(
+  () => Trip.selection(trip => trip.region.eq('south')),
+  [],
+);
+
+const trips = useOperationQuery(
+  Trip.domain.available.as(TripList),
+  { trips: candidateTrips },
+);
+```
+
+The bridge transports the Selection input and the JSON-safe View AST. The server validates the View
+against the Operation's declared `self.one()` or `self.many()` output, then performs the same single
+composed Query as the local runtime. Durable Operations and fixed outputs do not expose `.as(view)`.
 
 For diagnostics and tests, `as(view).inspect()` returns the composed Query without reading storage.
 Application code normally uses `run()`.

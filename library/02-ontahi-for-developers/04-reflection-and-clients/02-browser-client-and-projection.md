@@ -96,6 +96,30 @@ const todos = useOperationQuery(TodoItem.domain.list, openTodos);
 const complete = useOperation(TodoItem.domain.complete);
 ```
 
+A caller-authored View can shape either execution path. A direct graph read goes through the
+configured `graphExecutor`:
+
+```tsx
+const trips = useGraphQuery(
+  Trip.selection(trip => trip.region.eq('south')).as(TripList),
+  { mode: 'run', queryKey: ['trips', 'south', TripList.name] },
+);
+```
+
+When an Operation owns the semantic population, apply the same View to its generated declaration.
+The Operation bridge carries the input and View to the server:
+
+```tsx
+const trips = useOperationQuery(
+  Trip.domain.available.as(TripList),
+  { trips: candidateTrips },
+);
+```
+
+These are different execution routes, not different result-shaping concepts. The direct read sends
+the Query to the graph executor. The bridged Operation runs named domain behavior and composes its
+returned Selection with the caller's View before one final storage read.
+
 `useOperationQuery` does three model-aware things:
 
 1. it normalizes the Selection against the operation input contract;
