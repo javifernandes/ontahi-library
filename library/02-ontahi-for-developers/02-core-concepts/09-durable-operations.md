@@ -132,16 +132,21 @@ Today, `useDurableOperation` polls task snapshots through the configured bridge.
 `completed`, `failed`, or `cancelled` and exposes the latest snapshot as lifecycle state. Polling is
 the current portable baseline, not a generic stream abstraction.
 
-The React host supplies task observation once:
+The conventional React client already observes `/operations/tasks`. A host with custom paths
+configures the client bundle once:
 
 ```ts
-const bridge = createFetchOperationBridgeAdapter({
-  endpoint: '/operations',
-  taskEndpoint: '/operations/tasks',
+const client = createFetchGraphClient({
+  operations: {
+    endpoint: '/runtime/ontahi/operations',
+    taskEndpoint: '/runtime/ontahi/operations/tasks',
+  },
 });
 ```
 
-The Express adapter exposes both endpoints from the same composed application. A future
+The provider passes that task observer to `useDurableOperation`; individual bridge adapters remain
+available as a lower-level override. The Express adapter exposes both endpoints from the same
+composed application. A future
 push-capable observer can preserve the `TaskRunRef` and snapshot contract, but the current public
 hook uses polling.
 

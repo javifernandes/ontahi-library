@@ -93,38 +93,31 @@ host middleware.
 ## Supply runtime powers explicitly
 
 Explorer components can render descriptors without being allowed to read data or execute
-operations. The React host opts into those powers separately:
+Operations. The conventional client provides those Fetch capabilities lazily; a non-default mount
+root configures them once:
 
 ```tsx
 const mountPath = '/runtime/ontahi';
 
-const reflectedOperationInvoker = createFetchReflectedOperationInvoker({
-  mountPath,
+const client = createFetchGraphClient({
+  graphRead: { endpoint: `${mountPath}/graph/reads` },
+  operations: { mountPath },
+  reflectedEntityData: { endpoint: `${mountPath}/explorer/entities` },
 });
-
-const reflectedEntityDataReader = {
-  readEntityData: async query => {
-    const response = await fetch(`${mountPath}/explorer/entities`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(query),
-    });
-
-    if (!response.ok) throw new Error('Could not read reflected Entity data.');
-    return response.json();
-  },
-};
 
 <OntahiGraphProvider
   runtime={browserRuntime}
-  reflectedOperationInvoker={reflectedOperationInvoker}
-  reflectedEntityDataReader={reflectedEntityDataReader}
+  client={client}
 >
   <ExplorerShell basePath={`${mountPath}/explorer`} currentPath={pathname}>
     <ExplorerOverview snapshot={snapshot} />
   </ExplorerShell>
 </OntahiGraphProvider>
 ```
+
+At the conventional root, the provider needs neither `client` nor individual reader and invoker
+props. A fully explicit host can replace one capability or set `client={false}` and supply all of
+them itself.
 
 The package owns Explorer routes below `basePath`, its default shell, theme handling, operation
 input projection, and generic Entity, operation, and task views. The host chooses the outer route,

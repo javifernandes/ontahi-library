@@ -4,9 +4,10 @@ A \concept{Transport} carries an operation intention across a process boundary w
 a second definition of that operation. Node can invoke `TodoList.rename(...)` directly; a remote
 client needs that intention to reach the same application runtime.
 
-Ontahí currently has two different HTTP shapes:
+Ontahí currently has three relevant execution shapes:
 
 - an **operation bridge** carries generic invocations from an Ontahí client;
+- a **graph-read bridge** carries ordinary policy-scoped Queries without inventing an Operation;
 - **HTTP ingress** gives a particular operation an external route and provider channel.
 
 ## Carry generic operation invocations
@@ -23,6 +24,12 @@ const server = express();
 server.use(
   ontahiExpress(TodoApplication, {
     ...ontahiHttp,
+    invocationContext: request => ({
+      principal: authenticate(request),
+    }),
+    graphRead: {
+      policies: todoGraphReadPolicies,
+    },
     explorer: { indexFile },
   }),
 );
@@ -31,19 +38,29 @@ server.use(
 `mountPath` places every Ontahí-owned HTTP surface below one host-selected root:
 
 - `POST /runtime/ontahi/operations` invokes operations and answers permission checks;
+- `POST /runtime/ontahi/graph/reads` executes explicitly permitted Queries;
 - `GET /runtime/ontahi/operations/tasks/:taskId/:runId` observes durable runs;
 - `GET /runtime/ontahi/application` returns reflected application metadata;
 - `/runtime/ontahi/explorer/*` serves inspection endpoints when Explorer is enabled.
 
-The client receives the same host configuration:
+The React host configures the same mount root once:
 
-```ts
-const bridge = createFetchOperationBridgeAdapter(ontahiHttp);
+```tsx
+const client = createFetchGraphClient({
+  graphRead: { endpoint: '/runtime/ontahi/graph/reads' },
+  operations: { mountPath: '/runtime/ontahi' },
+  reflectedEntityData: { endpoint: '/runtime/ontahi/explorer/entities' },
+});
+
+<OntahiGraphProvider runtime={runtime} client={client}>
+  <App />
+</OntahiGraphProvider>
 ```
 
-The bridge derives both the invocation and task-observation endpoints. There is no global discovery
-step: the mount root is deployment configuration supplied to each runtime. This also allows one
-Express application to host several Ontahí applications under different roots.
+With the default root, `OntahiGraphProvider` installs those conventional endpoints without a
+`client` prop. There is no global discovery step: a non-default mount root is deployment
+configuration supplied once to the client runtime. This also allows one Express application to
+host several Ontahí applications under different roots.
 
 > [!MARGIN] **Express configuration stops at the adapter boundary.** Mount and surface paths,
 > Explorer exposure, ingress body limits, and error reporting belong here. CORS, rate limiting, and
@@ -83,11 +100,11 @@ checks authority, executes it, and returns the same canonical result used by oth
 Express or Next.js therefore supplies one invocation bridge, not one hand-authored endpoint per
 operation.
 
-## Two client execution paths
+## Three client execution paths
 
-Not every client-side graph action needs the bridge. Ontahí can interpret ordinary Data Graph
-Queries and Commands in a browser runtime backed by Supabase, while domain operations travel as
-semantic intentions to the server:
+Not every client-side graph action is a domain Operation. Ontahí can interpret permitted Queries
+and Commands in a browser runtime backed by Supabase, transport ordinary Queries to a server-only
+graph runtime, and carry domain Operations as named intentions:
 
 ```mermaid
 flowchart TB
@@ -99,7 +116,13 @@ flowchart TB
       Plan --> BrowserRuntime["Supabase browser runtime"]
     end
 
-    subgraph BridgedClient["Bridged domain operation"]
+    subgraph RemoteRead["Remote graph read"]
+      direction TB
+      QueryHook["Query hook"] --> ReadProgram["Selection + Query + View"]
+      ReadProgram --> ReadBridge["Graph-read bridge"]
+    end
+
+    subgraph BridgedClient["Bridged domain Operation"]
       direction TB
       OperationHook["Operation hook"] --> Intention["Operation id + semantic input"]
       Intention --> Bridge["Fetch bridge"]
@@ -115,6 +138,7 @@ flowchart TB
 
   Database["Application database"]
   BrowserRuntime -->|"PostgREST + RLS"| Database
+  ReadBridge -->|"validated Query"| ServerRuntime
   Bridge -->|"semantic invocation"| ServerApp
   ServerRuntime -->|"Queries / Commands"| Database
   Database ~~~ DatabaseMargin[" "]
@@ -125,21 +149,25 @@ flowchart TB
 
 Browser-direct does not bypass Ontahí. The client still authors Entities, Selections, Queries, and
 Commands; the Supabase runtime compiles them and the database enforces its RLS policy. No domain
-operation intention crosses a server boundary. Both paths may reach the same physical database;
-what changes is the authority and the runtime that interprets the work.
+Operation intention crosses a server boundary.
+
+A remote Query sends a versioned JSON-safe graph program. The server rebuilds it against canonical
+Entities and enforces an explicit default-deny policy over fields, operators, ordering, Relation
+paths, cardinality, limits, and authority-owned row scope before storage executes it.
 
 The bridge carries something more abstract: “rename this TodoList” or “complete this Selection.”
 The server operation may combine graph work, Capabilities, requirements, contracts, or durable
 execution before producing its canonical result.
 
-Use browser-direct execution only where the declared authority and database policy make that graph
-behavior legitimate. Use a bridged operation when the intention, policy, coordination, secret, or
-runtime belongs on the server.
+Use browser-direct execution only where the database boundary makes that graph behavior
+legitimate. Use a remote Query when storage is server-only but the read is still ordinary data
+access. Use a bridged Operation when the intention, invariant, coordination, secret, Capability, or
+durable lifecycle belongs in domain behavior.
 
-The current generic bridge is operation-first. A larger direction is to let an ordinary Query or
-Command cross the same runtime boundary when storage is server-only, while keeping authorization as
-an independent graph policy rather than forcing an otherwise empty wrapper operation. See
-[Data Graph Across Boundaries](../05-further-directions/11-data-graph-across-boundaries.md).
+Remote Commands are not implemented yet. Browser writes to server-only storage therefore still use
+Operations until the Command protocol and its write-policy boundary are defined. See
+[Data Graph Across Boundaries](../05-further-directions/11-data-graph-across-boundaries.md) for the
+current boundary and the remaining direction.
 
 ## Give an operation explicit HTTP ingress
 

@@ -194,3 +194,35 @@ list: operation({
 
 A more complex operation can execute an intermediate Query and continue composing work. The
 runtime remains responsible for interpreting the same Query language against its storage.
+
+## Observe a Query from React
+
+Generated client Entities expose the same `all()` and `where(...)` entry points. React derives the
+ordinary execution mode and cache key from the Query itself:
+
+```tsx
+const TodoRow = TodoItem.view('TodoRow', {
+  id: true,
+  title: true,
+  completed: true,
+});
+
+const openTodoRows = TodoItem
+  .where(todo => todo.completed.eq(false))
+  .as(TodoRow)
+  .orderBy(todo => todo.title);
+
+const rows = useGraphQuery(openTodoRows);
+const first = useGraphQuery(openTodoRows.first());
+const one = useGraphQuery(openTodoRows.one());
+const total = useGraphQuery(openTodoRows.count());
+const any = useGraphQuery(openTodoRows.exists());
+```
+
+Many rows are the default. `first()` permits no match; `one()` asserts strict cardinality. The
+canonical cache key includes the Entity, Selection, View, ordering, limit, cardinality, and read
+intention, then partitions that program by the provider's `ExecutionIdentity`.
+
+The same Query may execute directly against a browser-safe adapter or cross the remote graph-read
+protocol. A server-backed browser can only use the Entity fields, operators, Relations, modes, and
+row scope allowed by an explicit server policy. Entity registration alone exposes nothing.

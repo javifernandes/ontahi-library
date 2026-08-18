@@ -171,7 +171,8 @@ semantic identity.
 A React screen may first read and render complete TodoList records:
 
 ```tsx
-const lists = useOperationQuery(TodoList.domain.list);
+const TodoListRow = TodoList.view('TodoListRow', { id: true, name: true });
+const lists = useGraphQuery(TodoList.all().as(TodoListRow));
 const rename = useOperation(TodoList.domain.rename);
 
 return lists.data?.map(list => (

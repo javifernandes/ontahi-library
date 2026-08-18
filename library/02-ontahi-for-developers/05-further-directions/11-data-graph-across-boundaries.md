@@ -1,54 +1,123 @@
 # Data Graph Across Boundaries
 
-Today a browser with a Supabase runtime can interpret permitted Queries and Commands directly. A
-browser backed by server-only PostgreSQL usually invokes a domain operation through a bridge, even
-when the operation does nothing except execute one Query or Command.
+A browser with a Supabase runtime can interpret permitted Queries and Commands directly. A browser
+backed by server-only PostgreSQL can now transport an ordinary Query to an authoritative Ontahí
+runtime without declaring a wrapper Domain Operation.
 
-That distribution detail should not force new domain vocabulary.
+That distribution detail does not force new domain vocabulary:
 
-```ts
+```tsx
 const staleTodos = TodoItem.selection(todo =>
   todo.updatedAt.lt(thirtyDaysAgo),
 );
 
-const rows = staleTodos
-  .orderBy(todo => todo.title)
-  .run();
+const StaleTodo = TodoItem.view('StaleTodo', {
+  id: true,
+  title: true,
+  updatedAt: true,
+});
 
-const archival = staleTodos
-  .update({ archived: true })
-  .run();
+const rows = useGraphQuery(
+  TodoItem
+    .all()
+    .where(staleTodos)
+    .as(StaleTodo)
+    .orderBy(todo => todo.title),
+);
 ```
 
-The same code could bind to a direct browser adapter or to a remote Data Graph executor. The
-Selection, Query, and Command already contain the semantic program; an operation wrapper adds no
-meaning merely by transporting it.
+The same semantic Query can bind to a direct browser adapter or cross the remote Data Graph read
+protocol. The Selection describes population, the View describes materialization, and execution
+topology stays in runtime configuration.
 
 ```mermaid
 flowchart LR
-  Code["Selection · Query · Command"] --> Runtime{"Bound runtime"}
+  Code["Selection · Query · View"] --> Runtime{"Configured runtime"}
   Runtime -->|direct| BrowserStorage["Browser storage adapter"]
-  Runtime -->|remote| GraphBridge["Data Graph bridge"]
+  Runtime -->|remote| GraphBridge["Data Graph read bridge"]
   GraphBridge --> Policy["Server validation · authority · policy"]
   Policy --> ServerStorage["Server storage adapter"]
 ```
 
-This does not mean exposing arbitrary data access. A remote graph boundary can default to deny and
-declare which Entities, fields, operators, relations, row scopes, cardinalities, and Commands an
-authority may use. The server validates the portable AST and intersects requested targets with the
-caller's permitted Selection. It never receives JavaScript, provider queries, table names, or SQL.
+## Remote access is explicit policy
 
-Supabase demonstrates the other topology: browser execution is legitimate only because the data
-boundary enforces grants and row-level security. Ontahí can reflect and anticipate those rules, but
-client-side checks are not authority.
+Entity registration does not expose an Entity. The server installs one default-deny read policy
+for each remotely accessible root:
+
+```ts
+const TodoReadPolicy = {
+  entity: TodoItem,
+  modes: ['get', 'run', 'count'],
+  cardinalities: ['one', 'many'],
+  maxLimit: 200,
+  fields: {
+    id: { select: true, filter: ['eq', 'in'] },
+    ownerId: { filter: ['eq'] },
+    title: { select: true, order: true },
+    updatedAt: { select: true, filter: ['lt', 'gte'] },
+  },
+  scope: ({ authority, entity }) =>
+    selection(entity, todo => todo.ownerId.eq(authority.ownerId)),
+} satisfies GraphReadPolicy<typeof TodoItem, TodoAuthority>;
+```
+
+The boundary rebuilds the versioned JSON-safe graph program against canonical server Entities. It
+checks fields, operators, ordering, Relation traversal, read mode, cardinality, and limits, then
+intersects the requested Selection with the authority-owned scope. It never receives executable
+JavaScript, provider queries, table names, SQL, or caller-authored authority.
+
+`scope: 'all'` exists for deliberately public rows. Omitting a policy, field, Relation node, or
+operator always denies that surface.
+
+The policy authoring API is still an alpha surface and will gain more ergonomic composition. Its
+default-deny meaning and authoritative server enforcement are not temporary.
+
+## Identity crosses the client and server differently
+
+The React provider receives an `ExecutionIdentity` so canonical Query keys cannot mix anonymous,
+authenticated, tenant, service, or workspace state:
+
+```tsx
+<OntahiGraphProvider
+  runtime={{ name: 'browser' }}
+  identity={{
+    principal: session.principal ?? null,
+    cacheScope: session.workspaceId,
+  }}
+>
+  <App />
+</OntahiGraphProvider>
+```
+
+That identity partitions distributed cache state. It is not authorization. The host authenticates
+the native request independently, derives the authoritative Principal, and supplies the policy
+authority from trusted invocation context.
+
+## Operations remain domain behavior
 
 A \concept{Operation} still matters when the application names behavior: enforce an invariant,
-coordinate multiple changes, use secrets or capabilities, emit effects, or run durable work. The
-distinction becomes semantic instead of infrastructural:
+coordinate multiple changes, use secrets or Capabilities, emit effects, require authorization, or
+run durable work. The distinction is semantic instead of infrastructural:
 
-- Query and Command transport a Data Graph program.
+- Query transport carries an ordinary Data Graph read;
 - Operation invocation transports a named domain intention.
 
-A remote graph runtime would make storage topology replaceable without changing the application's
-language. It also creates a natural base for cache identity, Command reconciliation, observation,
-and future graph segmentation.
+An Operation may itself define a semantic population by returning `self.one()` or `self.many()`.
+The caller can apply a View, and the runtime composes that declarative Selection with the caller's
+shape into one final Query.
+
+## What remains directional
+
+The remote protocol currently carries Queries, not Commands or streams. A browser write against
+server-only storage still uses an Operation even when the eventual canonical form may be a direct
+Command. Remote insert, update, upsert, and delete need an explicit write-policy algebra for
+payload fields, affected-row bounds, authority scope, invariants, and cache reconciliation before
+they become a safe transport surface.
+
+Generated client Entities author portable Queries but are not yet directly runtime-bound for
+fluent `.run()` outside the React executor. Telemetry, reflected policy diagnostics, hybrid graph
+routing, and segmentation remain later capabilities over the same canonical program.
+
+Supabase demonstrates the direct topology: browser execution is legitimate only because the data
+boundary enforces grants and row-level security. Ontahí can reflect and anticipate those rules, but
+client-side checks never become authority.

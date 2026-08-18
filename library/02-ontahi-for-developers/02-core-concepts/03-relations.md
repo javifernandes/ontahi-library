@@ -77,52 +77,31 @@ For a required `f.ref`, `list` becomes the selected TodoList value. A
 
 ## Navigate through the relation
 
-An operation can traverse the same declared edge in the opposite direction:
+The Ref-valued field is already a typed membership criterion. An ordinary Query can select the
+TodoItems belonging to one list:
 
 ```ts
-operations: ({ self, commands, operation }) => ({
-  itemsForList: operation({
-    input: O.object({
-      list: TodoList.one(),
-    }),
-    output: self.array(),
-    exposure: 'bridge',
-    bridge: { query: [(input: unknown) => input] },
-    run: ({ list }) => commands.relatedTo(list).orderBy(todo => todo.title),
-  }),
-}),
+const itemsInList = TodoItem.selection(todo =>
+  todo.list.eq(TodoList.refById('list-research')),
+);
+
+const items = await TodoItem
+  .all()
+  .where(itemsInList)
+  .orderBy(todo => todo.title)
+  .run();
 ```
 
-`list` already carries the source Entity and its selection criterion. Because `TodoItem.list` is
-the only relation connecting TodoItem and TodoList, `relatedTo(list)` can infer the traversal. The
-operation does not reconstruct a query or repeat the relation name.
-
-If two relations connect the same pair of Entities, the edge is genuinely ambiguous. Name it only
-then:
-
-```ts
-commands.relatedTo(user, { through: 'createdBy' });
-```
-
-From Node, the operation accepts a Ref directly:
-
-```ts
-const result = await TodoItem.itemsForList({
-  list: TodoList.refById('list-research'),
-});
-
-if (!result.ok) throw new Error(`TodoItem.itemsForList failed: ${result.kind}`);
-
-for (const todo of result.value) console.log(todo.title);
-```
-
-The browser projection preserves the same input:
+The generated browser projection authors the same Query:
 
 ```tsx
 export const ItemsForList = ({ listId }: { listId: string }) => {
-  const todos = useOperationQuery(TodoItem.domain.itemsForList, {
-    list: TodoList.refById(listId),
-  });
+  const itemsInList = TodoItem.selection(todo =>
+    todo.list.eq(TodoList.refById(listId)),
+  );
+  const todos = useGraphQuery(
+    TodoItem.all().where(itemsInList).as(TodoItemRow),
+  );
 
   return (
     <ul>
@@ -131,6 +110,11 @@ export const ItemsForList = ({ listId }: { listId: string }) => {
   );
 };
 ```
+
+No read-only `itemsForList` Operation is required. The Ref already authors the same semantic
+membership, and the server's graph-read policy decides whether that field and operator are
+remotely available. Use an Operation only when “items for list” acquires application behavior that
+is not expressed by the Query itself.
 
 ## Declare the inverse collection
 

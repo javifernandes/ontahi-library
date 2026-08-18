@@ -118,11 +118,15 @@ const visibleTodos = useMemo(() => {
     : inList.and(todo => todo.completed.eq(status === 'completed'));
 }, [listId, status]);
 
-const todos = useOperationQuery(TodoItem.domain.list, visibleTodos);
-const complete = useOperation(TodoItem.domain.complete);
+const todos = useGraphQuery(
+  TodoItem.all().where(visibleTodos).as(TodoItemRow),
+);
+const complete = useOperation(
+  TodoItem.domain.complete({ todos: visibleTodos }),
+);
 
-await complete.executeAsync({ todos: visibleTodos });
+await complete.executeAsync();
 ```
 
 The UI does not translate its filter into a separate request model. It authors the same
-Selection language used by Node and interpreted by the operation runtime.
+Selection language used by Node, the remote Query dispatcher, and the Operation runtime.
