@@ -122,38 +122,150 @@ A plural inverse is not stored as an Entity field. It points back through the fi
 references:
 
 ```ts
-export const TodoTag = entity({
-  name: 'TodoTag',
+export const Enrollment = entity({
+  name: 'Enrollment',
   fields: {
-    todo: f.ref(TodoItem),
-    tag: f.ref(Tag),
+    student: f.ref(Student),
+    course: f.ref(Course),
+    status: f.string(),
   },
 });
 
-// In TodoItem's declaration
+// In Student's declaration
 relations: () => ({
-  tagAssignments: relation.inverse(TodoTag.fields.todo),
+  enrollments: relation.inverse(Enrollment.fields.student),
 }),
 ```
 
-`TodoTag.fields.todo` already supplies the related Entity, the reference value, and the join
+`Enrollment.fields.student` already supplies the related Entity, the reference value, and the join
 evidence. The inverse declaration adds only the domain name and `hasMany` cardinality.
 
-An association remains an Entity when it has identity, fields, or behavior of its own. Ontahí does
-not hide it inside an implicit many-to-many mechanism.
+## Change the connection as a Relation
+
+Changing a connection is not an ordinary field update with the meaning removed. A
+\concept{Relationship Command} preserves the structural intention:
+
+```ts
+const student = Student.refById('student-1');
+const course = Course.refById('course-1');
+
+const assign = relationship(Student, 'course', student).assign(course);
+const clear = relationship(Student, 'course', student).clear();
+```
+
+The inverse direction authors the same canonical command:
+
+```ts
+relationship(Course, 'students', course).add(student);
+relationship(Course, 'students', course).remove(student);
+```
+
+Assigning through `Student.course` and adding through `Course.students` are two domain readings of
+one link. Ontahí normalizes both directions to the identity of the Reference Field that owns the
+connection. Clearing a required relation is rejected before mutation.
+
+Execution returns a \concept{Relationship Delta}: only the links actually added or removed. An
+idempotent assignment therefore returns empty arrays instead of claiming that a change occurred.
+This exact delta can drive cache reconciliation, telemetry, reactions, or an audit trail without
+reconstructing intent from an Entity snapshot.
+
+```ts
+type RelationshipDelta = {
+  added: RelationshipFact[];
+  removed: RelationshipFact[];
+};
+```
+
+The command is structural behavior supplied by Ontahí. An application should not reimplement
+referential checks, nullability, inverse normalization, or delta calculation in every Operation.
+Use an Operation when assigning the relation also means approving enrollment, enforcing a domain
+invariant, coordinating other mutations, requiring authority, or starting durable work.
+
+## Declare a direct many-to-many Relation
+
+A join table that only stores topology does not need to become a public Entity. Declare the
+many-to-many Relation directly:
+
+```ts
+export const TodoItem = entity({
+  name: 'TodoItem',
+  fields: todoItemFields,
+  relations: {
+    tags: relation.manyToMany(Tag),
+  },
+});
+
+mapRelation(TodoItem, 'tags', {
+  type: 'many-to-many',
+  from: 'todo_items.id',
+  through: {
+    table: 'todo_tags',
+    fromColumn: 'todo_id',
+    toColumn: 'tag_id',
+  },
+  to: 'tags.id',
+});
+```
+
+Both endpoints may be Refs or Selections. Applying one command to N TodoItems and M Tags is the
+ordinary Cartesian relation mutation, not a hand-written batch protocol:
+
+```ts
+const selectedTodos = TodoItem.selection(todo => todo.completed.eq(false));
+const urgentTags = Tag.selection(tag => tag.name.eq('Urgent'));
+
+const addUrgent = relationshipSet(TodoItem, 'tags', selectedTodos).add(urgentTags);
+const removeUrgent = relationshipSet(TodoItem, 'tags', selectedTodos).remove(urgentTags);
+```
+
+The runtime resolves both Selections, validates explicit Refs exactly once, applies the edge
+mutation atomically, and returns the exact delta. An empty filtered Selection is a valid no-op; a
+missing explicit Ref is a cardinality failure and must not leave partial associations.
+
+## Promote an association when it has a life
+
+An association remains an ordinary Entity when it has attributes, identity, behavior, or lifecycle
+of its own:
+
+```ts
+export const Enrollment = entity({
+  name: 'Enrollment',
+  fields: {
+    id: f.id(),
+    student: f.ref(Student),
+    course: f.ref(Course),
+    startedAt: f.datetime(),
+    status: f.string(),
+    approvedBy: f.nullable(f.ref(User)),
+  },
+});
+```
+
+Ontahí does not require a public `AssociationEntity` subtype. Construction already requires the
+participant Refs because they are required fields; deletion extinguishes that association. The
+framework supplies ordinary Entity construction, deletion, referential interpretation, and applied
+mutation outcomes. The application adds only the lifecycle and invariants that make Enrollment a
+domain concept.
+
+This is the boundary:
+
+- `TodoItem.tags` is topology, so it remains a direct many-to-many Relation;
+- `Enrollment` has state and lifecycle, so it is an Entity;
+- an Operation coordinates either form when structural mutation alone is not the whole intention.
 
 ## Break declaration cycles explicitly
 
 When a reference field must target an Entity declared later, give Ontahí its semantic contract:
 
 ```ts
-const TodoItemRef = entity.ref('TodoItem', { fields: todoItemFields });
+const StudentRef = entity.ref('Student', { fields: studentFields });
 
-export const TodoTag = entity({
-  name: 'TodoTag',
+export const Enrollment = entity({
+  name: 'Enrollment',
   fields: {
-    todo: f.ref(TodoItemRef),
-    tag: f.ref(Tag),
+    student: f.ref(StudentRef),
+    course: f.ref(Course),
+    status: f.string(),
   },
 });
 ```

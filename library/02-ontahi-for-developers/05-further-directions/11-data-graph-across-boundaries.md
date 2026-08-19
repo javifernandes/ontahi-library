@@ -93,6 +93,27 @@ That identity partitions distributed cache state. It is not authorization. The h
 the native request independently, derives the authoritative Principal, and supplies the policy
 authority from trusted invocation context.
 
+## Relationship Commands are the first remote writes
+
+The remote graph protocol also carries structural Relationship Commands. The client sends a
+versioned command containing semantic Entity and Relation identities, the action, and Ref- or
+Selection-valued endpoints. It does not send table names, join columns, SQL, or policy decisions.
+
+The server resolves the canonical Relation and requires an explicit, default-deny policy:
+
+```ts
+graphCommand: {
+  policies: [
+    { entity: TodoItem, relationName: 'tags', actions: ['link', 'unlink'] },
+  ],
+},
+```
+
+The runtime validates endpoint cardinality and explicit Refs, applies the mutation atomically, and
+returns the exact Relationship Delta. PostgreSQL compiles a direct many-to-many command to one
+guarded statement; Supabase invokes one Ontahí RPC so validation, mutation, and delta calculation
+share the database transaction. Grants and row-level security remain authoritative in Supabase.
+
 ## Operations remain domain behavior
 
 A \concept{Operation} still matters when the application names behavior: enforce an invariant,
@@ -108,9 +129,8 @@ shape into one final Query.
 
 ## What remains directional
 
-The remote protocol currently carries Queries, not Commands or streams. A browser write against
-server-only storage still uses an Operation even when the eventual canonical form may be a direct
-Command. Remote insert, update, upsert, and delete need an explicit write-policy algebra for
+The remote protocol currently carries Queries and Relationship Commands, not generic CRUD Commands
+or streams. Remote insert, update, upsert, and delete still need an explicit write-policy algebra for
 payload fields, affected-row bounds, authority scope, invariants, and cache reconciliation before
 they become a safe transport surface.
 

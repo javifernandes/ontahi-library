@@ -4,10 +4,11 @@ A \concept{Transport} carries an operation intention across a process boundary w
 a second definition of that operation. Node can invoke `TodoList.rename(...)` directly; a remote
 client needs that intention to reach the same application runtime.
 
-Ontahí currently has three relevant execution shapes:
+Ontahí currently has four relevant execution shapes:
 
 - an **operation bridge** carries generic invocations from an Ontahí client;
 - a **graph-read bridge** carries ordinary policy-scoped Queries without inventing an Operation;
+- a **relationship-command bridge** carries explicitly permitted structural link mutations;
 - **HTTP ingress** gives a particular operation an external route and provider channel.
 
 ## Carry generic operation invocations
@@ -30,6 +31,11 @@ server.use(
     graphRead: {
       policies: todoGraphReadPolicies,
     },
+    graphCommand: {
+      policies: [
+        { entity: TodoItem, relationName: 'tags', actions: ['link', 'unlink'] },
+      ],
+    },
     explorer: { indexFile },
   }),
 );
@@ -39,6 +45,7 @@ server.use(
 
 - `POST /runtime/ontahi/operations` invokes operations and answers permission checks;
 - `POST /runtime/ontahi/graph/reads` executes explicitly permitted Queries;
+- `POST /runtime/ontahi/graph/commands` executes explicitly permitted Relationship Commands;
 - `GET /runtime/ontahi/operations/tasks/:taskId/:runId` observes durable runs;
 - `GET /runtime/ontahi/application` returns reflected application metadata;
 - `/runtime/ontahi/explorer/*` serves inspection endpoints when Explorer is enabled.
@@ -122,6 +129,12 @@ flowchart TB
       ReadProgram --> ReadBridge["Graph-read bridge"]
     end
 
+    subgraph RemoteRelation["Remote relationship mutation"]
+      direction TB
+      RelationHook["Relationship hook"] --> RelationCommand["Relationship Command"]
+      RelationCommand --> CommandBridge["Graph-command bridge"]
+    end
+
     subgraph BridgedClient["Bridged domain Operation"]
       direction TB
       OperationHook["Operation hook"] --> Intention["Operation id + semantic input"]
@@ -139,6 +152,7 @@ flowchart TB
   Database["Application database"]
   BrowserRuntime -->|"PostgREST + RLS"| Database
   ReadBridge -->|"validated Query"| ServerRuntime
+  CommandBridge -->|"validated structural mutation"| ServerRuntime
   Bridge -->|"semantic invocation"| ServerApp
   ServerRuntime -->|"Queries / Commands"| Database
   Database ~~~ DatabaseMargin[" "]
@@ -155,6 +169,12 @@ A remote Query sends a versioned JSON-safe graph program. The server rebuilds it
 Entities and enforces an explicit default-deny policy over fields, operators, ordering, Relation
 paths, cardinality, limits, and authority-owned row scope before storage executes it.
 
+A remote Relationship Command sends a smaller versioned program: canonical relation identity,
+`link` or `unlink`, and Ref- or Selection-valued endpoints. The server resolves that identity
+against its own Entity catalog and enforces a separate default-deny policy over the Relation and
+allowed actions. Client table names, join columns, SQL, and executable predicates never cross the
+boundary.
+
 The bridge carries something more abstract: “rename this TodoList” or “complete this Selection.”
 The server operation may combine graph work, Capabilities, requirements, contracts, or durable
 execution before producing its canonical result.
@@ -164,8 +184,9 @@ legitimate. Use a remote Query when storage is server-only but the read is still
 access. Use a bridged Operation when the intention, invariant, coordination, secret, Capability, or
 durable lifecycle belongs in domain behavior.
 
-Remote Commands are not implemented yet. Browser writes to server-only storage therefore still use
-Operations until the Command protocol and its write-policy boundary are defined. See
+Relationship Commands are the first remote write primitive. Generic insert, update, upsert, and
+delete are not remotely exposed yet; browser writes of those forms against server-only storage
+still use Operations until their write-policy algebra is defined. See
 [Data Graph Across Boundaries](../05-further-directions/11-data-graph-across-boundaries.md) for the
 current boundary and the remaining direction.
 

@@ -1,7 +1,7 @@
 # Ontahí Developer Surface Inventory
 
 Status: working inventory
-Evidence baseline: BookOps `feature/ontahi-todo-list-operations` at `eca9d7b1`
+Evidence baseline: Ontahí `0.1.0-alpha.6`, including Plan 131 Relationship Semantics
 
 This inventory decides what the first edition of *Ontahí for Developers* may teach as the normal
 way to build an application. It is evidence for the book, not a chapter in the book.
@@ -45,17 +45,19 @@ This is the shortest complete account of the current framework.
 | Entity | Canonical | `entity({ name, fields, locators, identity, relations, uses, operations })` | `@ontahi/core/entity`, every unified BookOps entity | The semantic declaration and operation module are one form. |
 | Field/schema | Canonical | `field.*` and `graphSchema.*`; the book imports the latter as `O` | `@ontahi/core/data-graph`, reflected inputs and outputs | Runtime-neutral validation and reflection vocabulary. Statically knowable admissibility—including excluded string values—belongs here, not in executable operation preconditions. |
 | Ref | Canonical | Entity locators and their ref factories | core ref tests, client and server input lowering, Todo explicit refs | Identifies one entity; an operation boundary may promote it to a singleton Selection. |
-| Relation | Canonical, bounded | Declare with `relation.belongsTo(...)` / `hasMany(...)`; read with `commands.relatedTo(...)` | Todo `listForList`, relation-root runtime tests, BookOps cyclic refs | Declares topology, navigation, and storage evidence; not yet a complete behavior owner. |
+| Relation | Canonical | Reference Fields, `relation.inverse(...)`, and `relation.manyToMany(...)`; read through relation-aware Queries | Todo direct tags relation, relation-root runtime tests, BookOps cyclic refs | Owns topology, cardinality, nullability, navigation, and structural relationship behavior. Associations with attributes or lifecycle remain ordinary Entities. |
 | Selection | Canonical | `Entity.selection(predicate)`; `Selection.all`, `none`, `references`; Boolean composition | Todo Node/React filters, core algebra tests, and all graph runtimes | A serializable description of membership, shared by UI filters, reads, and operation targets. |
 | Operation entity target | Canonical | `entity.one()` or `entity.many()`; pass a Selection, Ref, identity scalar, identity-bearing record, or—when targeting many—an array of those values | Todo operations, reflection, input normalization, and Explorer tests | The entity-facing API keeps Selection schema machinery out of declarations; the runner receives a Selection and materialized records cross the boundary only by identity. |
 | Query | Canonical | `commands.where(...)` or `commands.relatedTo(...)`, then shape with `select`, `include`, `orderBy`, and `limit` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection or declared relation. |
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
+| Relationship Command | Canonical | `relationship(...).assign/clear/add/remove` and `relationshipSet(...).add/remove` | Core relationship semantics and adapter conformance tests; Todo tag assignment | Preserves structural intent, normalizes inverse directions, accepts Ref- or Selection-valued endpoints, and returns the exact Relationship Delta. |
 | Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
 | Durable operation | Canonical, second pass | `operation({ durable: {...}, run })`; start with the bound operation and observe its `TaskRunRef` | Todo `completeAll`, task runtime, React lifecycle hook, and workflow tests | Start acceptance, progress snapshots, final output, and failure are separate lifecycle values. Polling is the current portable observation baseline; durability guarantees come from the configured executor and task storage. |
 | Capabilities | Canonical need; draft low-level API | `uses.capabilities` plus root `capabilities` | Todo notification Capability, BookOps exercises and notification capabilities | Typed resource injection connects Entities to host implementations, but the resources are opaque and may later become more semantic declarations. Sync, async, and Effect providers normalize once at the host boundary. Dependencies are not yet reflected or checked for completeness at composition time. |
 | Cross-entity dependency | Canonical | `uses.entities`, resolved through the application catalog | Todo and unified BookOps entities | Makes semantic dependencies explicit and independent of registration order. |
 | Storage | Canonical port | one `storage` supplied to `ontahi()`; in-memory and PostgreSQL bind directly to the registered Entity catalog | Todo storage switch, in-memory/PostgreSQL conformance, BookOps Supabase binding | Ontahí owns execution semantics. Conventional PostgreSQL mapping avoids a second schema declaration; the host owns persistence, migrations, physical exceptions, and transactions. |
 | Operation invocation transport | Canonical adapter boundary | mount a composed application through `ontahiExpress(...)` or a provider route handler | Express Todo, Next.js BookOps, shared invocation dispatcher | A generic bridge carries operation identity and opaque input through the common protocol; it does not redefine operations or create one endpoint per intention. |
+| Relationship Command transport | Canonical, bounded write boundary | versioned graph command plus explicit `graphCommand.policies` | Express Todo, remote graph-command tests, PostgreSQL and Supabase integration tests | Carries structural relationship changes without exposing storage topology. It is default-deny and does not imply generic remote CRUD. |
 | HTTP ingress | Canonical operation metadata; low-level host binding | `ingress.http({ method, route, provider, channel })`, reflected routes, provider registry, and shared dispatcher | BookOps GitHub push and installation webhooks, core ingress router tests | External providers authenticate and normalize requests before dispatch. Provider/router composition, delivery context, deduplication, and resource binding remain in motion. |
 | Browser projection | Canonical when a browser exists | codegen output consumed by `@ontahi/react`; author the same Refs and Selections from generated entities | Todo Vite client and BookOps generated entities | Browser-safe projection and client input types come from the application declaration. |
 | Reflection / Explorer | Canonical inspection surface | reflect the application and mount Explorer | Express example and BookOps Explorer | Inspection consumes the same application model; it is not a second registry. |
@@ -69,7 +71,7 @@ These are real parts of Ontahí, but they should appear only where their pressur
 | `entity.ref(name, contract?)` | Solves cyclic or import-sensitive semantic references. Direct entity references remain clearer when cycles are absent. |
 | `operationGroup(...)` | Bounds very large operation families for TypeScript and codegen. Ordinary entities should return an operation record directly. |
 | Named runtime values and cache identities | Connect operation caching and invalidation to derived identities; they are not entity locators. |
-| Graph-direct browser operations | Useful when ubiquitous graph behavior can execute safely in the browser runtime; authority must remain explicit. |
+| Graph-direct browser operations | Useful when ubiquitous graph behavior can execute safely in the browser runtime. Relationship Commands now have a bounded remote path; all authority remains server- or data-boundary-owned. |
 | Requirements, concerns, layers, effect intents, and telemetry | Cross-cutting runtime composition is supported, but each deserves a focused chapter or reference rather than entering the first entity example. |
 | Lower-level runtime constructors | Needed by adapter authors and unusual hosts, not by the normal application author. |
 | Provider-specific ingress and durable metadata | Real operation metadata whose meaning depends on the selected host/runtime. |
@@ -80,7 +82,7 @@ These are real parts of Ontahí, but they should appear only where their pressur
 | Surface | Canonical replacement or direction |
 | --- | --- |
 | `entityModule(...)`, `entityModuleWithCapabilities(...)` | Use the unified `entity({...})` declaration. The module APIs remain migration machinery. |
-| `relationModule(...)`, `relationModuleWithCapabilities(...)` | Do not introduce relation modules in the main path. Relation-owned behavior is not settled. |
+| `relationModule(...)`, `relationModuleWithCapabilities(...)` | Use Relation declarations plus canonical Relationship Commands for structural behavior. Use an Entity for an association with identity or lifecycle, and an Operation for domain coordination. |
 | Global `architecture(...)` registration and `getArchitecture()` | Compose once with `ontahi(...)`; consume the returned application and app facade. |
 | Manual `defineGraphApi(...)` entity registries | Use `ontahi({ entities })`; reflection, storage, codegen, and execution must observe the same catalog. |
 | `defineOntahiApplication(...)` as app authoring | Treat as lower-level compatibility/construction. `ontahi(...)` is the application root. |
@@ -148,7 +150,8 @@ coordination, durable execution, effects, or a stable public contract.
 
 ## Known gaps: do not write them as settled behavior
 
-1. Relations declare topology but do not yet have settled identity or relation-owned behavior.
+1. Generic remote insert, update, upsert, and delete do not yet have the bounded write-policy
+   algebra already available to Relationship Commands.
 2. Relation predicates and relational free-text search remain incomplete.
 3. Capability injection works, but it is a draft low-level resource API and `uses.capabilities`
    remains a typed witness. Dependency reflection and composition-time completeness checks do not

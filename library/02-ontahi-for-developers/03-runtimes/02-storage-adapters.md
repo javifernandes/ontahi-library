@@ -15,7 +15,7 @@ export const TodoApplication = ontahi({
   storage,
   tasks: inProcessTasks(),
   capabilities: { runtime: { notifications: todoNotifications } },
-  entities: [TodoList, TodoItem, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag],
 });
 ```
 
@@ -57,6 +57,11 @@ The adapter compiles the same Selections, Queries, Commands, relation paths, pro
 and cardinality rules into parameterized SQL. `TodoList.rename(...)` is still the operation; storage
 changes how its graph command is carried out.
 
+Direct many-to-many Relationship Commands compile to one guarded PostgreSQL statement. Endpoint
+Selections become source and target subqueries, the join table mutation happens atomically, and
+`RETURNING` supplies the exact links that changed. Repeated `add` or `remove` calls are no-ops; an
+unresolved explicit Ref prevents the mutation instead of leaving a partial Cartesian product.
+
 > [!MARGIN] **The host still owns schema history.** Ontahí can map the current semantic model to
 > physical names. It does not infer the deployment history required to reach that schema. SQL
 > migrations, indexes, constraints, connections, and transaction boundaries remain host choices.
@@ -68,8 +73,10 @@ need a second persistence model, and switching from in-memory to PostgreSQL does
 Entity catalog it inspects.
 
 The Supabase adapter interprets the same graph plans through PostgREST and can persist task runs.
-Its current application-storage assembly remains lower-level than the PostgreSQL path, so it
-belongs in production adapter reference rather than the main form.
+Many-to-many mutations use one installed Ontahí RPC so endpoint resolution, cardinality guards,
+edge mutation, and delta capture stay inside one database transaction while grants and RLS remain
+authoritative. Its current application-storage assembly remains lower-level than the PostgreSQL
+path, so it belongs in production adapter reference rather than the main form.
 
 The invariant is the useful part: changing where state lives must not redefine the Selection,
 Query, Command, or operation that acts on it.

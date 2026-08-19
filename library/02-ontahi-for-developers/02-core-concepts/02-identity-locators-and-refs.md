@@ -133,38 +133,41 @@ TodoList the caller means until the runtime interprets that identity.
 Some identities need more than one field:
 
 ```ts
-export const TodoTag = entity({
-  name: 'TodoTag',
+export const Enrollment = entity({
+  name: 'Enrollment',
   fields: {
-    todoId: f.id(),
-    tagId: f.id(),
+    student: f.ref(Student),
+    course: f.ref(Course),
+    status: f.string(),
   },
   locators: {
-    refByTodoAndTag: ['todoId', 'tagId'],
+    refByStudentAndCourse: ['student', 'course'],
   },
-  identity: 'refByTodoAndTag',
+  identity: 'refByStudentAndCourse',
   operations: ({ self, operation }) => ({
-    remove: operation({
+    withdraw: operation({
       input: O.object({
-        assignment: self.one(),
+        enrollment: self.one(),
       }),
-      run: ({ assignment }) => assignment.delete(),
+      run: ({ enrollment }) => enrollment.delete(),
     }),
   }),
 });
 ```
 
-Given records returned by real operations, the association needs no synthetic join-table ID:
+Because Enrollment has state and lifecycle of its own, it is an Entity rather than anonymous
+many-to-many topology. It still needs no synthetic ID when its participants form its identity:
 
 ```ts
-const assignment = TodoTag.refByTodoAndTag(todo.id, urgentTag.id);
-const result = await TodoTag.remove({ assignment });
+const enrollment = Enrollment.refByStudentAndCourse(student, course);
+const result = await Enrollment.withdraw({ enrollment });
 
-if (!result.ok) throw new Error(`TodoTag.remove failed: ${result.kind}`);
+if (!result.ok) throw new Error(`Enrollment.withdraw failed: ${result.kind}`);
 ```
 
-The locator carries both identity fields, so the association can cross an operation boundary by
-semantic identity.
+The locator carries both participant Refs, so the association can cross an operation boundary by
+semantic identity. A pure link such as `TodoItem.tags` remains a direct many-to-many Relation and
+uses Relationship Commands instead of becoming an Entity only to represent its join table.
 
 ## The object does not cross the boundary
 

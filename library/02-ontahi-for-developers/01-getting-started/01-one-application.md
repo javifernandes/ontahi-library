@@ -12,7 +12,7 @@ pnpm add --save-exact @ontahi/core@alpha
 export const TodoApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
   tasks: inProcessTasks(),
-  entities: [TodoList, Tag, TodoTag, TodoItem],
+  entities: [TodoList, Tag, TodoItem],
 });
 ```
 

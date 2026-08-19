@@ -95,7 +95,7 @@ export const TodoApplication = ontahi({
       notifications: todoNotifications,
     },
   },
-  entities: [TodoList, TodoItem, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag],
 });
 ```
 
@@ -155,7 +155,7 @@ const notifications = adaptEffectMethods<
 const TestApplication = ontahi({
   storage: createInMemoryDataGraphStorage(),
   capabilities: { runtime: { notifications } },
-  entities: [TodoList, TodoItem, Tag, TodoTag],
+  entities: [TodoList, TodoItem, Tag],
 });
 ```
 
