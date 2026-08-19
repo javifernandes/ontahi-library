@@ -81,13 +81,9 @@ The Ref-valued field is already a typed membership criterion. An ordinary Query 
 TodoItems belonging to one list:
 
 ```ts
-const itemsInList = TodoItem.selection(todo =>
-  todo.list.eq(TodoList.refById('list-research')),
-);
-
 const items = await TodoItem
   .all()
-  .where(itemsInList)
+  .where(todo => todo.list.eq(TodoList.refById('list-research')))
   .orderBy(todo => todo.title)
   .run();
 ```
@@ -96,11 +92,11 @@ The generated browser projection authors the same Query:
 
 ```tsx
 export const ItemsForList = ({ listId }: { listId: string }) => {
-  const itemsInList = TodoItem.selection(todo =>
-    todo.list.eq(TodoList.refById(listId)),
-  );
   const todos = useGraphQuery(
-    TodoItem.all().where(itemsInList).as(TodoItemRow),
+    TodoItem
+      .all()
+      .where(todo => todo.list.eq(TodoList.refById(listId)))
+      .as(TodoItemRow),
   );
 
   return (
@@ -225,6 +221,9 @@ const removeUrgent = relationshipSet(TodoItem, 'tags', selectedTodos).remove(urg
 The runtime resolves both Selections, validates explicit Refs exactly once, applies the edge
 mutation atomically, and returns the exact delta. An empty filtered Selection is a valid no-op; a
 missing explicit Ref is a cardinality failure and must not leave partial associations.
+
+Selections are essential in this example because each endpoint describes a reusable set rather
+than one identity. See [Selections](04-selections.md) for their membership and composition model.
 
 ## Promote an association when it has a life
 
