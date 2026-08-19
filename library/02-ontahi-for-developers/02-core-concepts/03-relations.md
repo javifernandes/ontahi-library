@@ -160,6 +160,10 @@ relationship(Course, 'students', course).add(student);
 relationship(Course, 'students', course).remove(student);
 ```
 
+The verbs follow cardinality: use `assign` and `clear` for a to-one Relation, and `add` and `remove`
+for a to-many Relation. They are not application-defined methods; Ontahí provides and validates
+them from the Relation declaration.
+
 Assigning through `Student.course` and adding through `Course.students` are two domain readings of
 one link. Ontahí normalizes both directions to the identity of the Reference Field that owns the
 connection. Clearing a required relation is rejected before mutation.
