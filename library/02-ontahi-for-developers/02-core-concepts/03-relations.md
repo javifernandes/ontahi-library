@@ -90,6 +90,11 @@ const items = await TodoItem
 
 The generated browser projection authors the same Query:
 
+> [!MARGIN] **One graph language, two execution models.** Notice how closely the server and client
+> code correspond. On the server, `.run()` executes the Query directly. In React, `useGraphQuery`
+> observes that same Query through React's reactive lifecycle. Ontahí's Entity and Query vocabulary
+> remains ubiquitous across the boundary; only the execution model changes.
+
 ```tsx
 export const ItemsForList = ({ listId }: { listId: string }) => {
   const todos = useGraphQuery(
