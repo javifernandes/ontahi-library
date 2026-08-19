@@ -112,10 +112,17 @@ export const ItemsForList = ({ listId }: { listId: string }) => {
 };
 ```
 
-No read-only `itemsForList` Operation is required. The Ref already authors the same semantic
+You do not need to invent a read-only Operation such as `fetchItemsForList` merely to wrap this
+read; that would duplicate the Query as boilerplate. The Ref already authors the same semantic
 membership, and the server's graph-read policy decides whether that field and operator are
-remotely available. Use an Operation only when “items for list” acquires application behavior that
-is not expressed by the Query itself.
+remotely available.
+
+Reify the behavior as an Operation only when the application needs a named server-owned contract:
+authorization or other requirements, explicit failures, rate limiting or telemetry concerns,
+secrets and Capabilities, coordination across effects, or a durable lifecycle. See
+[Operations](07-operations.md), [Operation Contracts and Failures](08-operation-contracts-and-failures.md),
+[Durable Operations](09-durable-operations.md), and
+[Authentication and Principals](../03-runtimes/04-authentication-and-principals.md).
 
 ## Declare the inverse collection
 
