@@ -1,7 +1,7 @@
 # Ontahí Developer Surface Inventory
 
 Status: working inventory
-Evidence baseline: Ontahí `0.1.0-alpha.6`, including Plan 131 Relationship Semantics
+Evidence baseline: Ontahí `0.1.0-alpha.7`, including Plan 131 Relationship Semantics
 
 This inventory decides what the first edition of *Ontahí for Developers* may teach as the normal
 way to build an application. It is evidence for the book, not a chapter in the book.
@@ -50,7 +50,7 @@ This is the shortest complete account of the current framework.
 | Operation entity target | Canonical | `entity.one()` or `entity.many()`; pass a Selection, Ref, identity scalar, identity-bearing record, or—when targeting many—an array of those values | Todo operations, reflection, input normalization, and Explorer tests | The entity-facing API keeps Selection schema machinery out of declarations; the runner receives a Selection and materialized records cross the boundary only by identity. |
 | Query | Canonical | `commands.where(...)` or `commands.relatedTo(...)`, then shape with `select`, `include`, `orderBy`, and `limit` | Todo, BookOps, in-memory/Postgres/Supabase conformance | Shapes and executes a read over a selection or declared relation. |
 | Command | Canonical | `insert*`, `upsert*`, `selection.update`, `selection.delete` | Todo and graph runtime tests | Performs ubiquitous persistence behavior without inventing a domain endpoint. |
-| Relationship Command | Canonical | `relationship(...).assign/clear/add/remove` and `relationshipSet(...).add/remove` | Core relationship semantics and adapter conformance tests; Todo tag assignment | Preserves structural intent, normalizes inverse directions, accepts Ref- or Selection-valued endpoints, and returns the exact Relationship Delta. |
+| Relationship Command | Canonical | Entity-bound Ref facades (`student.course.assign(course)`, `course.students.add(student)`) and Selection-level `relationshipSet(...).add/remove` | Core relationship semantics and adapter conformance tests; Todo tag assignment | Preserves structural intent, normalizes inverse directions, accepts Ref- or Selection-valued endpoints, and returns the exact Relationship Delta. |
 | Domain operation | Canonical | Declare with `operation(...)`; invoke a bound operation as `Entity.operation(input)` | Todo and BookOps operations | Names intention and owns policy, coordination, effects, or a stable use case. |
 | Durable operation | Canonical, second pass | `operation({ durable: {...}, run })`; start with the bound operation and observe its `TaskRunRef` | Todo `completeAll`, task runtime, React lifecycle hook, and workflow tests | Start acceptance, progress snapshots, final output, and failure are separate lifecycle values. Polling is the current portable observation baseline; durability guarantees come from the configured executor and task storage. |
 | Capabilities | Canonical need; draft low-level API | `uses.capabilities` plus root `capabilities` | Todo notification Capability, BookOps exercises and notification capabilities | Typed resource injection connects Entities to host implementations, but the resources are opaque and may later become more semantic declarations. Sync, async, and Effect providers normalize once at the host boundary. Dependencies are not yet reflected or checked for completeness at composition time. |

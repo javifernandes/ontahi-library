@@ -157,20 +157,26 @@ Changing a connection is not an ordinary field update with the meaning removed. 
 const student = Student.refById('student-1');
 const course = Course.refById('course-1');
 
-const assign = relationship(Student, 'course', student).assign(course);
-const clear = relationship(Student, 'course', student).clear();
+const assign = student.course.assign(course);
+const clear = student.course.clear();
 ```
 
 The inverse direction authors the same canonical command:
 
 ```ts
-relationship(Course, 'students', course).add(student);
-relationship(Course, 'students', course).remove(student);
+course.students.add(student);
+course.students.remove(student);
 ```
 
 The verbs follow cardinality: use `assign` and `clear` for a to-one Relation, and `add` and `remove`
 for a to-many Relation. They are not application-defined methods; Ontahí provides and validates
-them from the Relation declaration.
+them from the Relation declaration. Relation names, available verbs, and participant Ref types are
+all checked statically: `student.course.add(...)` and `course.students.assign(...)` do not type-check.
+
+The methods are a local facade over a portable Ref. They are non-enumerable and do not become part
+of its serialized identity; crossing a process boundary still carries only the Entity name and
+locator. The lower-level `relationship(Entity, relationName, subject)` factory remains available to
+framework integrations, but ordinary application code starts from the bound Ref.
 
 Assigning through `Student.course` and adding through `Course.students` are two domain readings of
 one link. Ontahí normalizes both directions to the identity of the Reference Field that owns the
@@ -261,6 +267,37 @@ participant Refs because they are required fields; deletion extinguishes that as
 framework supplies ordinary Entity construction, deletion, referential interpretation, and applied
 mutation outcomes. The application adds only the lifecycle and invariants that make Enrollment a
 domain concept.
+
+Creating and deleting the Entity are therefore another way to establish and extinguish a
+relationship, while preserving that this association has identity and state:
+
+```ts
+const student = Student.refById('student-1');
+const course = Course.refById('course-1');
+
+await Enrollment.insert({
+  id: 'enrollment-1',
+  student,
+  course,
+  startedAt: new Date(),
+  status: 'active',
+  approvedBy: null,
+}).run();
+
+await Enrollment
+  .selection(enrollment => enrollment.id.eq('enrollment-1'))
+  .delete()
+  .run();
+```
+
+Deletion uses a Selection because Entity Commands always state their target set explicitly; this
+one selects exactly the association identity. The next chapter develops
+[Selections](04-selections.md) as the reusable membership language behind that target.
+
+Both a direct `Student.course` edge and an `Enrollment(student, course)` instance may expose the
+same connection for traversal. Their mutation outcomes remain intentionally different. A direct
+Relation reports links added or removed; creating or deleting `Enrollment` reports an Entity
+lifecycle change, so its attributes, reactions, policy, and history are not erased.
 
 This is the boundary:
 
